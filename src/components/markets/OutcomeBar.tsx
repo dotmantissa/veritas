@@ -4,24 +4,32 @@ interface OutcomeBarProps {
   outcomes: string[]
   pools: number[]
   totalPool: number
+  variant?: 'compact' | 'detail'
 }
 
 const segmentColors = [
-  'from-cyan-300 to-sky-500',
-  'from-emerald-300 to-teal-500',
-  'from-amber-300 to-orange-500',
-  'from-fuchsia-300 to-pink-500',
-  'from-violet-300 to-indigo-500',
+  'bg-accent',
+  'bg-accent-hot',
+  'bg-status-resolved',
+  'bg-status-open',
+  'bg-status-resolving',
 ]
 
 export function OutcomeBar({
   outcomes,
   pools,
   totalPool,
+  variant = 'compact',
 }: OutcomeBarProps) {
+  const isDetail = variant === 'detail'
+
   return (
-    <div className="space-y-4">
-      <div className="flex h-3 overflow-hidden rounded-full bg-white/10">
+    <div className={isDetail ? 'space-y-5' : 'space-y-3'}>
+      <div
+        className={`flex overflow-hidden rounded-full bg-bg-surface ${
+          isDetail ? 'h-8' : 'h-2'
+        }`}
+      >
         {outcomes.map((outcome, index) => {
           const pool = pools[index] ?? 0
           const width = totalPool > 0 ? (pool / totalPool) * 100 : 0
@@ -29,24 +37,44 @@ export function OutcomeBar({
           return (
             <div
               key={outcome}
-              className={`h-full bg-gradient-to-r ${segmentColors[index % segmentColors.length]}`}
+              className={`h-full transition-[width] duration-700 ease-out ${segmentColors[index % segmentColors.length]}`}
               style={{ width: `${width}%` }}
             />
           )
         })}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+      <div className={isDetail ? 'space-y-3' : 'space-y-2'}>
         {outcomes.map((outcome, index) => (
           <div
             key={outcome}
-            className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3"
+            className={`flex items-center justify-between gap-3 ${
+              isDetail
+                ? 'rounded-xl border border-border bg-bg-card px-4 py-3'
+                : ''
+            }`}
           >
-            <p className="text-sm font-medium text-white">{outcome}</p>
-            <p className="mt-1 text-sm text-slate-300">
-              {calcImpliedProbability(pools[index] ?? 0, totalPool)}
-            </p>
-            <p className="mt-1 text-xs text-slate-400">
+            <div className="min-w-0">
+              <p
+                className={`truncate font-semibold text-text-primary ${
+                  isDetail ? 'text-base' : 'text-sm'
+                }`}
+              >
+                {outcome}
+              </p>
+              <p
+                className={`mt-1 font-mono uppercase tracking-[0.12em] text-text-secondary ${
+                  isDetail ? 'text-xs' : 'text-[11px]'
+                }`}
+              >
+                {calcImpliedProbability(pools[index] ?? 0, totalPool)}
+              </p>
+            </div>
+            <p
+              className={`shrink-0 font-mono ${
+                isDetail ? 'text-sm text-text-primary' : 'text-xs text-text-muted'
+              }`}
+            >
               {formatRIALO(pools[index] ?? 0)}
             </p>
           </div>

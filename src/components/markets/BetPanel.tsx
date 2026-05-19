@@ -33,6 +33,11 @@ export function BetPanel({ market }: { market: Market }) {
     )
   }, [market.outcome_pools, market.total_pool, numericAmount, selectedOutcome])
 
+  const returnMultiple =
+    numericAmount > 0 && Number.isFinite(numericAmount)
+      ? previewPayout / numericAmount
+      : 0
+
   async function handleSubmit(): Promise<void> {
     if (!wallet || !wallet.connected) {
       setError('Connect wallet to place a bet.')
@@ -76,51 +81,60 @@ export function BetPanel({ market }: { market: Market }) {
   }
 
   return (
-    <aside className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-xl shadow-slate-950/20">
-      <h2 className="text-2xl font-semibold text-white">Place a Bet</h2>
-      <p className="mt-2 text-sm leading-7 text-slate-300">
+    <aside className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-bg-base/95 p-4 backdrop-blur lg:static lg:z-auto lg:rounded-xl lg:border lg:bg-bg-card lg:p-6">
+      <h2 className="font-display text-3xl uppercase tracking-[0.08em] text-text-primary">
+        Place Your Bet
+      </h2>
+      <p className="mt-2 text-sm leading-7 text-text-secondary">
         Choose an outcome, size your position, and submit a simulated Rialo
         transaction with confirmation timing and persistent state.
       </p>
 
       {wallet && wallet.connected ? (
-        <p className="mt-5 rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-sm text-cyan-100">
+        <p className="mt-5 rounded-xl border border-border bg-bg-surface px-4 py-3 text-sm text-text-primary">
           Available: {formatRIALO(wallet.balance)}
         </p>
       ) : (
-        <p className="mt-5 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
+        <p className="mt-5 rounded-xl border border-border bg-bg-surface px-4 py-3 text-sm text-text-secondary">
           Wallet not connected.
         </p>
       )}
 
-      <div className="mt-6 space-y-3">
+      <div className="mt-6 grid grid-cols-2 gap-3">
         {market.outcome_labels.map((outcome, index) => (
           <button
             key={outcome}
             type="button"
             onClick={() => setSelectedOutcome(index)}
-            className={`w-full rounded-2xl border px-4 py-3 text-left text-sm font-medium transition ${
+            className={`rounded-xl border px-4 py-3 text-left transition ${
               selectedOutcome === index
-                ? 'border-cyan-300 bg-cyan-300 text-slate-950'
-                : 'border-white/10 bg-slate-950/40 text-slate-200 hover:border-cyan-400/30 hover:text-white'
+                ? 'border-accent bg-accent-subtle text-text-primary'
+                : 'border-border bg-bg-surface text-text-secondary hover:border-text-muted hover:text-text-primary'
             }`}
           >
-            {outcome}
+            <span className="block text-sm font-semibold">{outcome}</span>
+            <span className="mt-1 block font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted">
+              {market.total_pool > 0
+                ? `${(((market.outcome_pools[index] ?? 0) / market.total_pool) * 100).toFixed(1)}%`
+                : '0.0%'}
+            </span>
           </button>
         ))}
       </div>
 
       <label className="mt-6 block">
-        <span className="mb-2 block text-sm font-medium text-slate-200">Amount</span>
-        <div className="flex items-center rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3">
+        <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+          Stake Amount
+        </span>
+        <div className="flex items-center rounded-xl border border-border bg-bg-input px-4 py-3">
           <input
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
             inputMode="decimal"
-            className="w-full bg-transparent text-base text-white outline-none"
+            className="w-full border-0 bg-transparent p-0 text-right font-mono text-2xl text-text-primary shadow-none outline-none ring-0"
             placeholder="100"
           />
-          <span className="text-sm text-slate-400">RIALO</span>
+          <span className="ml-3 text-sm text-text-muted">RIALO</span>
         </div>
       </label>
 
@@ -130,35 +144,51 @@ export function BetPanel({ market }: { market: Market }) {
             key={quickAmount}
             type="button"
             onClick={() => setAmount(String(quickAmount))}
-            className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-sm text-slate-200 transition hover:border-cyan-400/30 hover:text-white"
+            className="rounded-full border border-border bg-bg-surface px-3 py-1.5 text-sm text-text-secondary transition hover:border-text-muted hover:text-text-primary"
           >
             {quickAmount}
           </button>
         ))}
+        <button
+          type="button"
+          onClick={() => setAmount(String(wallet?.balance ?? 0))}
+          className="rounded-full border border-border bg-bg-surface px-3 py-1.5 text-sm text-text-secondary transition hover:border-text-muted hover:text-text-primary"
+        >
+          MAX
+        </button>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-white/10 bg-slate-950/40 p-4">
-        <p className="text-sm text-slate-300">
-          If <span className="font-semibold text-white">{market.outcome_labels[selectedOutcome]}</span>{' '}
-          wins: you receive approximately{' '}
-          <span className="font-semibold text-white">{formatRIALO(previewPayout)}</span>
+      <div className="mt-6 rounded-xl border border-border-subtle bg-bg-surface p-4">
+        <p className="text-sm text-text-secondary">
+          If{' '}
+          <span className="font-semibold text-text-primary">
+            {market.outcome_labels[selectedOutcome]}
+          </span>{' '}
+          wins
         </p>
-        <p className="mt-2 text-xs text-slate-500">
-          Based on current pool share and a 2% protocol fee.
+        <p className="mt-2 font-display text-4xl uppercase tracking-[0.06em] text-accent">
+          {formatRIALO(previewPayout)}
+        </p>
+        <p className="mt-1 text-xs uppercase tracking-[0.18em] text-text-muted">
+          {returnMultiple > 0 ? `${returnMultiple.toFixed(1)}x return` : '0.0x return'}
         </p>
       </div>
 
-      {error ? <p className="mt-4 text-sm text-rose-300">{error}</p> : null}
+      {error ? <p className="mt-4 text-sm text-status-disputed">{error}</p> : null}
 
       <button
         type="button"
         onClick={() => void handleSubmit()}
         disabled={!wallet?.connected || isSubmitting}
-        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-300 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50"
+        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 font-display text-2xl uppercase tracking-[0.08em] text-bg-base transition duration-150 ease-out hover:scale-[1.02] hover:brightness-110 active:scale-[0.97] disabled:cursor-not-allowed disabled:border disabled:border-dashed disabled:border-border disabled:bg-bg-surface disabled:text-text-muted disabled:hover:scale-100 disabled:hover:brightness-100"
       >
         {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-        Place Bet
+        Place Bet →
       </button>
+
+      <p className="mt-4 text-center text-[11px] uppercase tracking-[0.16em] text-text-muted">
+        {FEE_BPS / 100}% protocol fee · ~0.000005 RIALO gas
+      </p>
     </aside>
   )
 }

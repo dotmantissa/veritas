@@ -5,6 +5,7 @@ import { format } from 'date-fns'
 import { useParams } from 'next/navigation'
 import { useState } from 'react'
 import {
+  ArrowLeft,
   BadgeInfo,
   Loader2,
   ShieldCheck,
@@ -50,6 +51,7 @@ export default function MarketDetailPage() {
   }
 
   const currentMarket = market
+  const creatorInitials = currentMarket.creator.slice(0, 2).toUpperCase()
 
   const canTriggerResolution =
     currentMarket.status === 'Open' &&
@@ -79,33 +81,47 @@ export default function MarketDetailPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <section className="rounded-[2.25rem] border border-white/10 bg-gradient-to-br from-cyan-400/8 via-slate-900/90 to-slate-900 p-8 shadow-2xl shadow-slate-950/30">
+    <div className={`space-y-8 ${currentMarket.status === 'Open' ? 'pb-80 lg:pb-0' : ''}`}>
+      <section className="rounded-xl border border-border bg-bg-card p-6 sm:p-8 fade-up">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-4xl">
-            <div className="flex flex-wrap items-center gap-3">
-              <MarketStatusBadge status={market.status} />
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-slate-300">
+            <Link
+              href="/markets"
+              className="inline-flex items-center gap-2 text-sm text-text-secondary transition hover:text-text-primary"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to markets
+            </Link>
+
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <span className="rounded-full border border-border bg-bg-surface px-3 py-1 text-xs font-medium text-text-secondary">
                 {currentMarket.category}
               </span>
+              <MarketStatusBadge status={market.status} />
               {currentMarket.status === 'Open' ? (
                 <CountdownTimer deadline={currentMarket.deadline} />
+              ) : currentMarket.resolution_detail ? (
+                <span className="rounded-full border border-border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.14em] text-text-secondary">
+                  Resolved {format(currentMarket.resolution_detail.resolved_at, 'MMM d · h:mm a')}
+                </span>
               ) : null}
             </div>
 
-            <h1 className="mt-5 text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl">
+            <h1 className="mt-5 font-display text-[clamp(2.25rem,6vw,3.75rem)] uppercase leading-none tracking-[0.04em] text-text-primary">
               {currentMarket.question}
             </h1>
 
-            <div className="mt-6 flex flex-wrap gap-4 text-sm text-slate-300">
-              <span>Creator {formatAddress(currentMarket.creator)}</span>
-              <span>Created {format(currentMarket.created_at, 'MMM d, yyyy · h:mm a')}</span>
-              <span>{currentMarket.resolution_sources.length} locked sources</span>
+            <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-text-secondary">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-bg-surface font-mono text-xs text-text-primary">
+                {creatorInitials}
+              </span>
+              <span>Created by {formatAddress(currentMarket.creator)}</span>
+              <span>{format(currentMarket.created_at, 'MMM d, yyyy · h:mm a')}</span>
             </div>
 
             {currentMarket.status === 'Resolved' &&
             currentMarket.resolved_outcome !== null ? (
-              <p className="mt-5 inline-flex items-center gap-2 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">
+              <p className="mt-5 inline-flex items-center gap-2 rounded-xl border border-status-open/30 bg-status-open/10 px-4 py-3 text-sm text-status-open">
                 <ShieldCheck className="h-4 w-4" />
                 Winning outcome:{' '}
                 {currentMarket.outcome_labels[currentMarket.resolved_outcome]}
@@ -113,25 +129,25 @@ export default function MarketDetailPage() {
             ) : null}
 
             {currentMarket.status === 'Disputed' ? (
-              <p className="mt-5 inline-flex items-center gap-2 rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-100">
+              <p className="mt-5 inline-flex items-center gap-2 rounded-xl border border-status-disputed/30 bg-status-disputed/10 px-4 py-3 text-sm text-status-disputed">
                 <TriangleAlert className="h-4 w-4" />
                 Consensus failed. Positions can be refunded.
               </p>
             ) : null}
           </div>
 
-          <div className="w-full max-w-sm rounded-[1.75rem] border border-white/10 bg-white/5 p-5">
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+          <div className="w-full max-w-sm rounded-xl border border-border bg-bg-surface p-5">
+            <p className="text-xs uppercase tracking-[0.2em] text-text-muted">
               Total Pool
             </p>
-            <p className="mt-3 text-3xl font-semibold text-white">
+            <p className="mt-3 font-display text-5xl uppercase tracking-[0.05em] text-accent">
               {formatRIALO(currentMarket.total_pool)}
             </p>
-            <p className="mt-5 text-sm text-slate-300">
+            <p className="mt-5 text-sm text-text-secondary">
               Consensus threshold: {currentMarket.consensus_threshold}/
               {currentMarket.resolution_sources.length}
             </p>
-            <p className="mt-2 text-sm text-slate-300">
+            <p className="mt-2 text-sm text-text-secondary">
               Protocol fee: 0.000005 RIALO gas, 2% settlement fee
             </p>
 
@@ -140,7 +156,7 @@ export default function MarketDetailPage() {
                 type="button"
                 onClick={() => void handleTriggerResolution()}
                 disabled={isResolving}
-                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm font-semibold text-amber-100 transition hover:border-amber-300/35 hover:bg-amber-400/15 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-accent bg-accent-subtle px-4 py-3 text-sm font-semibold text-accent transition hover:border-text-primary hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isResolving ? <Loader2 className="h-4 w-4 animate-spin" /> : <TimerReset className="h-4 w-4" />}
                 Trigger Resolution
@@ -150,26 +166,28 @@ export default function MarketDetailPage() {
             {!wallet?.connected &&
             currentMarket.deadline < Date.now() &&
             currentMarket.status === 'Open' ? (
-              <p className="mt-4 text-sm text-slate-400">
+              <p className="mt-4 text-sm text-text-muted">
                 Connect wallet to trigger resolution once the deadline passes.
               </p>
             ) : null}
 
-            {error ? <p className="mt-4 text-sm text-rose-300">{error}</p> : null}
+            {error ? <p className="mt-4 text-sm text-status-disputed">{error}</p> : null}
           </div>
         </div>
       </section>
 
-      <section className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_22rem]">
+      <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="space-y-8">
-          <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6">
+          <section className="rounded-xl border border-border bg-bg-card p-6 fade-up fade-up-delay-1">
             <div className="flex items-center gap-3">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-200">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-bg-surface text-accent">
                 <BadgeInfo className="h-5 w-5" />
               </span>
               <div>
-                <h2 className="text-2xl font-semibold text-white">Pool Breakdown</h2>
-                <p className="text-sm text-slate-400">
+                <h2 className="font-display text-3xl uppercase tracking-[0.08em] text-text-primary">
+                  Pool <span className="text-accent">Breakdown</span>
+                </h2>
+                <p className="text-sm text-text-secondary">
                   Implied probabilities update directly from the seeded liquidity pools.
                 </p>
               </div>
@@ -180,6 +198,7 @@ export default function MarketDetailPage() {
                 outcomes={currentMarket.outcome_labels}
                 pools={currentMarket.outcome_pools}
                 totalPool={currentMarket.total_pool}
+                variant="detail"
               />
             </div>
           </section>
@@ -193,10 +212,14 @@ export default function MarketDetailPage() {
           ) : null}
         </div>
 
-        <div className="xl:sticky xl:top-28 xl:self-start">
+        <div className="hidden lg:sticky lg:top-28 lg:block lg:self-start">
           <BetPanel market={currentMarket} />
         </div>
       </section>
+
+      <div className="lg:hidden">
+        <BetPanel market={currentMarket} />
+      </div>
     </div>
   )
 }

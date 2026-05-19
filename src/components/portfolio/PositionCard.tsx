@@ -23,6 +23,13 @@ export function PositionCard({ market, position }: PositionCardProps) {
   const wallet = useWalletStore((state) => state.wallet)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const outcomeStyles = [
+    'bg-accent text-bg-base',
+    'bg-accent-hot text-white',
+    'bg-status-resolved text-white',
+    'bg-status-open text-bg-base',
+    'bg-status-resolving text-bg-base',
+  ]
 
   const winning = market.resolved_outcome === position.outcome_index
   const claimablePayout =
@@ -37,6 +44,8 @@ export function PositionCard({ market, position }: PositionCardProps) {
       market.total_pool
     )
   }, [market.outcome_pools, market.total_pool, position.outcome_index])
+
+  const outcomeColor = outcomeStyles[position.outcome_index % outcomeStyles.length]
 
   async function handleClaim(): Promise<void> {
     if (!wallet || !wallet.connected) {
@@ -61,65 +70,77 @@ export function PositionCard({ market, position }: PositionCardProps) {
   }
 
   return (
-    <article className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 shadow-xl shadow-slate-950/20">
+    <article className="rounded-xl border border-border bg-bg-card p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="min-w-0 flex-1">
+        <div className="flex gap-4 min-w-0 flex-1">
+          <div className={`hidden w-1 rounded-full sm:block ${outcomeColor.split(' ')[0]}`} />
+          <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-3">
             <MarketStatusBadge status={market.status} />
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-slate-300">
+            <span className="rounded-full border border-border bg-bg-surface px-3 py-1 text-xs font-medium text-text-secondary">
               {market.category}
             </span>
           </div>
 
           <Link
             href={`/markets/${market.id}`}
-            className="mt-4 inline-flex items-start gap-2 text-xl font-semibold text-white transition hover:text-cyan-100"
+            className="mt-4 inline-flex items-start gap-2 text-lg font-semibold text-text-primary transition hover:text-accent"
           >
             <span className="line-clamp-2">{market.question}</span>
             <ArrowUpRight className="mt-1 h-4 w-4 shrink-0" />
           </Link>
 
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs uppercase tracking-[0.16em] text-slate-400">
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${outcomeColor}`}>
+              {market.outcome_labels[position.outcome_index]}
+            </span>
+            <span className="font-mono text-sm text-text-primary">
+              {formatRIALO(position.amount)}
+            </span>
+            <span className="font-mono text-xs uppercase tracking-[0.12em] text-text-muted">
+              Opened {format(position.created_at, 'MMM d, yyyy')}
+            </span>
+          </div>
+
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="rounded-xl border border-border bg-bg-surface px-4 py-3">
+              <p className="text-xs uppercase tracking-[0.16em] text-text-muted">
                 Your Outcome
               </p>
-              <p className="mt-2 text-sm font-semibold text-white">
+              <p className="mt-2 text-sm font-semibold text-text-primary">
                 {market.outcome_labels[position.outcome_index]}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs uppercase tracking-[0.16em] text-slate-400">
+            <div className="rounded-xl border border-border bg-bg-surface px-4 py-3">
+              <p className="text-xs uppercase tracking-[0.16em] text-text-muted">
                 Your Stake
               </p>
-              <p className="mt-2 text-sm font-semibold text-white">
+              <p className="mt-2 font-mono text-sm text-text-primary">
                 {formatRIALO(position.amount)}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs uppercase tracking-[0.16em] text-slate-400">
+            <div className="rounded-xl border border-border bg-bg-surface px-4 py-3">
+              <p className="text-xs uppercase tracking-[0.16em] text-text-muted">
                 Implied Probability
               </p>
-              <p className="mt-2 text-sm font-semibold text-white">
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-bg-base">
+                <div
+                  className={outcomeColor.split(' ')[0]}
+                  style={{ width: impliedProbability }}
+                />
+              </div>
+              <p className="mt-2 text-sm font-semibold text-text-primary">
                 {impliedProbability}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-white/10 bg-slate-950/40 px-4 py-3">
-              <p className="text-xs uppercase tracking-[0.16em] text-slate-400">
-                Opened
-              </p>
-              <p className="mt-2 text-sm font-semibold text-white">
-                {format(position.created_at, 'MMM d, yyyy')}
               </p>
             </div>
           </div>
         </div>
+        </div>
 
-        <div className="w-full max-w-xs rounded-[1.5rem] border border-white/10 bg-slate-950/40 p-4">
-          <p className="text-sm text-slate-300">
+        <div className="w-full max-w-xs rounded-xl border border-border bg-bg-surface p-4">
+          <p className="text-sm text-text-secondary">
             {position.claimed
               ? 'Funds already claimed.'
               : claimablePayout
@@ -136,14 +157,22 @@ export function PositionCard({ market, position }: PositionCardProps) {
               type="button"
               onClick={() => void handleClaim()}
               disabled={isSubmitting}
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-300 px-4 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-60"
+              className={`mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 font-display text-xl uppercase tracking-[0.08em] transition duration-150 ease-out hover:scale-[1.02] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 ${
+                claimablePayout
+                  ? 'bg-accent text-bg-base hover:brightness-110'
+                  : 'border border-border bg-transparent text-text-primary hover:border-text-muted hover:bg-bg-card-hover'
+              }`}
             >
               {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              {claimablePayout ? 'Claim Payout' : 'Claim Refund'}
+              {claimablePayout ? 'Claim Payout →' : 'Claim Refund →'}
             </button>
           ) : null}
 
-          {error ? <p className="mt-3 text-sm text-rose-300">{error}</p> : null}
+          {position.claimed ? (
+            <p className="mt-4 text-sm text-status-open">✓ Claimed</p>
+          ) : null}
+
+          {error ? <p className="mt-3 text-sm text-status-disputed">{error}</p> : null}
         </div>
       </div>
     </article>

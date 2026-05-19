@@ -1,168 +1,537 @@
 'use client'
 
 import Link from 'next/link'
+import { useMemo, useState } from 'react'
 import { isToday } from 'date-fns'
 import {
   ArrowRight,
   BadgeDollarSign,
   BrainCircuit,
   CandlestickChart,
+  Check,
+  Clock3,
   Globe2,
+  Lock,
+  ShieldCheck,
+  Sparkles,
+  Zap,
 } from 'lucide-react'
 
 import { MarketCard } from '@/components/markets/MarketCard'
+import { SectionTitle } from '@/components/ui/SectionTitle'
+import { StatCallout } from '@/components/ui/StatCallout'
 import { useMarketStore } from '@/store/marketStore'
 
-const steps = [
+type StakeTierMode = 'Testnet' | 'Mainnet'
+
+const featureCards = [
   {
-    title: 'Create a market with a question and resolution sources',
-    description:
-      'Define the question, outcomes, and the APIs that will determine the final answer.',
-    icon: Globe2,
+    number: '01',
+    icon: Zap,
+    title: 'No Oracle Needed',
+    body:
+      'The contract reads the internet directly. No Chainlink, no Pyth, no reporters. Truth comes from source consensus.',
   },
   {
-    title: 'Anyone bets on an outcome',
-    description:
-      'Users take positions into the shared pool, shifting probability in real time.',
-    icon: BadgeDollarSign,
-  },
-  {
-    title: 'At deadline, the contract reads all sources and finds consensus',
-    description:
-      'Veritas compares the locked sources, tallies agreement, and settles deterministically.',
+    number: '02',
     icon: BrainCircuit,
+    title: 'Async Resolution',
+    body:
+      "Rialo's contracts sleep until deadline, wake, call every source simultaneously, and settle — all in a single async workflow.",
   },
   {
-    title: 'Winners are paid instantly. No appeals, no reporters, no waiting.',
-    description:
-      'Once consensus lands, the payout path becomes mechanical instead of political.',
-    icon: CandlestickChart,
+    number: '03',
+    icon: ShieldCheck,
+    title: 'Multi-Source Consensus',
+    body:
+      '3–5 authoritative APIs must agree before any outcome is confirmed. Manipulation requires compromising all sources at once.',
+  },
+  {
+    number: '04',
+    icon: Clock3,
+    title: '50ms Settlement',
+    body:
+      'Rialo block time means payouts arrive before you finish refreshing. Not minutes. Not hours. Seconds.',
+  },
+  {
+    number: '05',
+    icon: Sparkles,
+    title: 'No Account Needed',
+    body:
+      "Rialo's account abstraction means login with email or phone. No seed phrases, no MetaMask, no friction.",
+  },
+] as const
+
+const workflowSteps = [
+  {
+    number: '01',
+    title: 'Define Your Prediction',
+    body:
+      'Write any yes/no or multi-outcome question. Set a deadline. Specify 3–5 API sources that will definitively answer it.',
+  },
+  {
+    number: '02',
+    title: 'The Crowd Decides',
+    body:
+      'Anyone stakes RIALO on the outcome they believe. Pool sizes shift in real-time, showing implied probability.',
+  },
+  {
+    number: '03',
+    title: 'Truth Resolves It',
+    body:
+      'At deadline, the contract fetches every source simultaneously. Consensus wins. Payouts are instant. No appeals.',
+  },
+] as const
+
+const testnetTiers = [
+  {
+    name: 'Starter',
+    price: 'FREE',
+    descriptor: '100 RIALO starting balance',
+    features: [
+      'All market types',
+      '100 RIALO starting balance',
+      'Basic resolution view',
+      '3 open positions max',
+    ],
+    cta: 'Get Started',
+    emphasized: false,
+  },
+  {
+    name: 'Predictor',
+    price: '500 RIALO',
+    descriptor: 'per market max stake',
+    features: [
+      'Everything in Starter',
+      'Priority in pool splits',
+      'Resolution console access',
+      'Unlimited positions',
+      'Portfolio analytics',
+    ],
+    cta: 'Start Predicting',
+    emphasized: true,
+  },
+  {
+    name: 'Whale',
+    price: '5,000 RIALO',
+    descriptor: 'no limit',
+    features: [
+      'Everything in Predictor',
+      'Early market creation',
+      'Multi-outcome markets',
+      'Custom sources',
+      'Dedicated support',
+    ],
+    cta: 'Contact Team',
+    emphasized: false,
+  },
+] as const
+
+const mainnetTiers = [
+  {
+    name: 'Starter',
+    price: 'FREE',
+    descriptor: 'public launch access',
+    features: [
+      'All market types',
+      'Gasless login',
+      'Basic resolution view',
+      'Limited open positions',
+    ],
+    cta: 'Join Waitlist',
+    emphasized: false,
+    locked: false,
+  },
+  {
+    name: 'Predictor',
+    price: '500 RIALO',
+    descriptor: 'coming on mainnet',
+    features: [
+      'Everything in Starter',
+      'Priority in pool splits',
+      'Resolution console access',
+      'Unlimited positions',
+      'Portfolio analytics',
+    ],
+    cta: 'Coming on Mainnet',
+    emphasized: true,
+    locked: true,
+  },
+  {
+    name: 'Whale',
+    price: '5,000 RIALO',
+    descriptor: 'coming on mainnet',
+    features: [
+      'Everything in Predictor',
+      'Early market creation',
+      'Multi-outcome markets',
+      'Custom sources',
+      'Dedicated support',
+    ],
+    cta: 'Coming on Mainnet',
+    emphasized: false,
+    locked: true,
   },
 ] as const
 
 export default function HomePage() {
+  const [stakeMode, setStakeMode] = useState<StakeTierMode>('Testnet')
   const markets = useMarketStore((state) => state.markets)
 
-  const totalVolume = markets.reduce((sum, market) => sum + market.total_pool, 0)
-  const resolvedToday = markets.filter(
-    (market) => market.resolution_detail && isToday(market.resolution_detail.resolved_at)
-  ).length
-  const featuredMarkets = [...markets]
-    .filter((market) => market.status === 'Open')
-    .sort((left, right) => {
-      const leftActivity = Math.max(left.created_at, left.deadline)
-      const rightActivity = Math.max(right.created_at, right.deadline)
-      return rightActivity - leftActivity
-    })
-    .slice(0, 3)
+  const totalVolume = useMemo(
+    () => markets.reduce((sum, market) => sum + market.total_pool, 0),
+    [markets]
+  )
+  const resolvedToday = useMemo(
+    () =>
+      markets.filter(
+        (market) =>
+          market.resolution_detail &&
+          isToday(market.resolution_detail.resolved_at)
+      ).length,
+    [markets]
+  )
+  const resolvedCount = useMemo(
+    () => markets.filter((market) => market.status === 'Resolved').length,
+    [markets]
+  )
+  const featuredMarkets = useMemo(
+    () =>
+      [...markets]
+        .filter((market) => market.status === 'Open')
+        .sort((left, right) => {
+          const leftActivity = Math.max(left.created_at, left.deadline)
+          const rightActivity = Math.max(right.created_at, right.deadline)
+          return rightActivity - leftActivity
+        })
+        .slice(0, 3),
+    [markets]
+  )
+
+  const stakeTiers = stakeMode === 'Testnet' ? testnetTiers : mainnetTiers
 
   return (
-    <div className="space-y-10">
-      <section className="overflow-hidden rounded-[2.5rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.18),_transparent_30%),linear-gradient(135deg,_rgba(15,23,42,0.96),_rgba(2,6,23,0.96))] p-8 shadow-2xl shadow-slate-950/40 sm:p-10">
-        <span className="inline-flex rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-cyan-200">
-          Rialo Testnet Simulation
-        </span>
-        <h1 className="mt-6 max-w-4xl text-4xl font-semibold tracking-tight text-white sm:text-6xl">
-          Veritas. Truth from consensus, not gatekeepers.
-        </h1>
-        <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-300">
-          Prediction markets that self-resolve by reading the internet. No
-          oracles. No reporters. No disputes.
-        </p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+    <div className="space-y-0">
+      <section
+        className="hero-noise fade-up relative overflow-hidden rounded-[20px] border border-border bg-bg-base px-6 py-14 sm:px-8 lg:min-h-[calc(100vh-9rem)] lg:px-10 lg:py-20"
+        style={{ backgroundColor: 'var(--bg-base)' }}
+      >
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+          <div className="fade-up fade-up-delay-1">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-text-secondary">
+              <span className="text-accent-hot">◈</span>
+              Powered by Rialo · Oracle-Free Resolution
+            </span>
+
+            <h1 className="mt-8 max-w-4xl font-display text-[clamp(56px,8vw,96px)] uppercase leading-[0.9] tracking-[0.08em] text-text-primary">
+              Predict
+              <br />
+              With <span className="text-accent">Truth</span>
+              <br />
+              Not Trust
+            </h1>
+
+            <p className="mt-6 max-w-[420px] text-[15px] leading-7 text-text-secondary md:text-base">
+              Prediction markets that self-resolve by reading the internet. No
+              oracles. No reporters. No disputes. Ever.
+            </p>
+
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+              <StatCallout
+                value={String(markets.length)}
+                label="Markets"
+                className="fade-up fade-up-delay-2"
+              />
+              <StatCallout
+                value={new Intl.NumberFormat('en-US').format(totalVolume)}
+                unit="RIALO"
+                label="Rialo Staked"
+                className="fade-up fade-up-delay-3"
+              />
+              <StatCallout
+                value={String(resolvedToday)}
+                label="Resolved Today"
+                className="fade-up fade-up-delay-4"
+              />
+            </div>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/markets"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-accent-hot px-7 py-3 text-sm font-semibold text-white transition duration-150 ease-out hover:scale-[1.02] hover:brightness-110 active:scale-[0.97]"
+              >
+                Browse Markets
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/markets/create"
+                className="inline-flex items-center justify-center rounded-lg border border-border bg-transparent px-7 py-3 text-sm font-semibold text-text-primary transition duration-150 ease-out hover:border-text-muted hover:bg-bg-input active:scale-[0.97]"
+              >
+                Create Market
+              </Link>
+            </div>
+          </div>
+
+          <div className="fade-up fade-up-delay-2 relative mx-auto w-full max-w-[520px]">
+            <div className="absolute -top-4 left-6 rounded-full border border-border bg-bg-surface px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-accent">
+              58x Faster Resolution
+            </div>
+            <div className="absolute inset-4 rounded-2xl border border-border bg-bg-card opacity-40 [transform:rotate(2deg)]" />
+            <div className="relative rounded-2xl border border-border bg-bg-card p-6 [transform:rotate(-2deg)] transition duration-200 ease-out hover:[transform:rotate(0deg)]">
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.16em] text-status-open">
+                  <span className="h-1.5 w-1.5 rounded-full bg-status-open" />
+                  Live
+                </span>
+                <span className="font-mono text-xs text-text-muted">
+                  Market Preview
+                </span>
+              </div>
+
+              <h3 className="mt-6 text-xl font-semibold leading-tight text-text-primary sm:text-2xl">
+                Will BTC close above $120k by June 30, 2026?
+              </h3>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <div className="rounded-xl border border-accent bg-accent-subtle px-4 py-4">
+                  <p className="text-sm font-semibold uppercase tracking-[0.12em] text-text-primary">
+                    Yes
+                  </p>
+                  <p className="mt-2 font-display text-4xl uppercase tracking-[0.06em] text-accent">
+                    68.3%
+                  </p>
+                </div>
+                <div className="rounded-xl border border-border bg-bg-surface px-4 py-4">
+                  <p className="text-sm font-semibold uppercase tracking-[0.12em] text-text-primary">
+                    No
+                  </p>
+                  <p className="mt-2 font-display text-4xl uppercase tracking-[0.06em] text-accent-hot">
+                    31.7%
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 h-3 overflow-hidden rounded-full bg-bg-surface">
+                <div className="h-full w-[68.3%] bg-accent transition-[width] duration-700 ease-out" />
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-2">
+                {['CoinGecko ✓', 'Binance API ✓', 'CMC ✓'].map((source) => (
+                  <span
+                    key={source}
+                    className="rounded-full border border-border bg-bg-base px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-text-secondary"
+                  >
+                    {source}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-t border-border bg-bg-surface px-6 py-6 sm:px-8 lg:px-10">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <StatCallout value={String(markets.length)} label="Total Markets Created" />
+          <StatCallout
+            value={new Intl.NumberFormat('en-US').format(totalVolume)}
+            unit="RIALO"
+            label="Total Rialo Staked"
+          />
+          <StatCallout value={String(resolvedCount)} label="Markets Resolved" />
+          <StatCallout value="< 2" unit="s" label="Avg Resolution Time" />
+        </div>
+      </section>
+
+      <section className="fade-up bg-bg-base px-6 py-16 sm:px-8 lg:px-10">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <SectionTitle
+            title="LIVE MARKETS"
+            accentWord="MARKETS"
+            subtitle="Explore what the crowd believes. Hover to see resolution sources."
+          />
           <Link
             href="/markets"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
+            className="text-sm text-text-secondary transition hover:text-text-primary"
           >
-            Browse Markets
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link
-            href="/markets/create"
-            className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:border-cyan-400/35 hover:bg-cyan-400/10"
-          >
-            Create a Market
-          </Link>
-        </div>
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
-          <p className="text-xs uppercase tracking-[0.22em] text-slate-400">
-            Total Markets
-          </p>
-          <p className="mt-3 text-4xl font-semibold text-white">{markets.length}</p>
-        </div>
-        <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
-          <p className="text-xs uppercase tracking-[0.22em] text-slate-400">
-            Total Volume
-          </p>
-          <p className="mt-3 text-4xl font-semibold text-white">
-            {new Intl.NumberFormat('en-US').format(totalVolume)} RIALO
-          </p>
-        </div>
-        <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
-          <p className="text-xs uppercase tracking-[0.22em] text-slate-400">
-            Markets Resolved Today
-          </p>
-          <p className="mt-3 text-4xl font-semibold text-white">{resolvedToday}</p>
-        </div>
-      </section>
-
-      <section className="space-y-6">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-cyan-200">
-              Featured Markets
-            </p>
-            <h2 className="mt-2 text-3xl font-semibold text-white">
-              Most recently active open markets
-            </h2>
-          </div>
-          <Link href="/markets" className="text-sm text-cyan-200 hover:text-cyan-100">
             View all markets
           </Link>
         </div>
-        <div className="grid gap-6 lg:grid-cols-3">
+
+        <div className="mt-8 flex flex-wrap gap-2">
+          {['All', 'Sports', 'Finance', 'Crypto', 'Weather', 'Politics'].map(
+            (filter, index) => (
+              <button
+                key={filter}
+                type="button"
+                className={`rounded-full border px-4 py-2 text-sm transition ${
+                  index === 0
+                    ? 'border-accent-hot bg-accent-hot text-white'
+                    : 'border-border bg-bg-card text-text-secondary hover:border-text-muted hover:text-text-primary'
+                }`}
+              >
+                {filter}
+              </button>
+            )
+          )}
+        </div>
+
+        <div className="mt-8 grid gap-6 lg:grid-cols-3">
           {featuredMarkets.map((market) => (
             <MarketCard key={market.id} market={market} />
           ))}
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-white/10 bg-white/5 p-8">
-        <div className="max-w-2xl">
-          <p className="text-xs uppercase tracking-[0.22em] text-cyan-200">
-            How It Works
-          </p>
-          <h2 className="mt-2 text-3xl font-semibold text-white">
-            Four deterministic steps from question to payout
-          </h2>
-        </div>
-        <div className="mt-8 grid gap-5 lg:grid-cols-2">
-          {steps.map((step, index) => {
-            const Icon = step.icon
+      <section className="bg-bg-surface px-6 py-16 sm:px-8 lg:px-10">
+        <SectionTitle
+          title="BUILT DIFFERENT"
+          accentWord="DIFFERENT"
+          subtitle="Not another prediction market. Here's what sets Veritas apart."
+        />
+
+        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+          {featureCards.map((feature, index) => {
+            const Icon = feature.icon
+            const centered = index >= 3
 
             return (
-              <div
-                key={step.title}
-                className="rounded-[1.75rem] border border-white/10 bg-slate-950/50 p-6"
+              <article
+                key={feature.number}
+                className={`relative overflow-hidden rounded-xl border border-border bg-bg-card p-7 transition duration-200 ease-out hover:border-text-muted hover:bg-bg-card-hover hover:shadow-[0_0_0_1px_var(--text-muted)] ${
+                  centered ? 'lg:col-span-1' : ''
+                } ${index === 3 ? 'lg:col-start-1 xl:col-start-1' : ''} ${
+                  index === 4 ? 'lg:col-start-2 xl:col-start-2' : ''
+                }`}
               >
-                <div className="flex items-center gap-4">
-                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-200">
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <span className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-400">
-                    Step {index + 1}
-                  </span>
-                </div>
-                <h3 className="mt-5 text-xl font-semibold text-white">{step.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-slate-300">
-                  {step.description}
+                <span className="feature-number">{feature.number}</span>
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-[10px] bg-bg-surface text-accent">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <h3 className="mt-5 text-[20px] font-semibold text-text-primary">
+                  {feature.title}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-text-secondary">
+                  {feature.body}
                 </p>
-              </div>
+              </article>
             )
           })}
+        </div>
+      </section>
+
+      <section className="bg-bg-base px-6 py-16 sm:px-8 lg:px-10">
+        <SectionTitle title="HOW IT WORKS" accentWord="WORKS" />
+
+        <div className="relative mt-10">
+          <div className="steps-connector absolute left-[16.66%] right-[16.66%] top-6 hidden border-t border-dashed border-border lg:block" />
+          <div className="grid gap-8 lg:grid-cols-3">
+            {workflowSteps.map((step) => (
+              <article key={step.number} className="relative rounded-xl bg-transparent">
+                <p className="font-display text-5xl uppercase tracking-[0.08em] text-accent">
+                  {step.number}
+                </p>
+                <h3 className="mt-5 text-xl font-semibold text-text-primary">
+                  {step.title}
+                </h3>
+                <p className="mt-3 max-w-sm text-sm leading-7 text-text-secondary">
+                  {step.body}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-bg-surface px-6 py-16 sm:px-8 lg:px-10">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <SectionTitle
+            title="SIMPLE STAKES"
+            accentWord="STAKES"
+            subtitle="Start free. Bet what you believe."
+          />
+
+          <div className="inline-flex rounded-full border border-border bg-bg-card p-1">
+            {(['Testnet', 'Mainnet'] as StakeTierMode[]).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setStakeMode(mode)}
+                className={`rounded-full px-5 py-2 text-sm font-medium transition ${
+                  stakeMode === mode
+                    ? 'bg-accent-hot text-white'
+                    : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                {mode}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+          {stakeTiers.map((tier) => (
+            <article
+              key={tier.name}
+              className={`relative rounded-xl border bg-bg-card p-6 transition duration-200 ease-out hover:border-text-muted hover:bg-bg-card-hover ${
+                tier.emphasized
+                  ? 'border-accent-hot shadow-[0_0_0_1px_var(--accent-hot)]'
+                  : 'border-border'
+              }`}
+            >
+              {tier.emphasized ? (
+                <span className="absolute right-5 top-5 rounded-full bg-accent-hot px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.05em] text-white">
+                  Most Popular
+                </span>
+              ) : null}
+
+              {('locked' in tier && tier.locked) ? (
+                <span className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-border bg-bg-surface px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted">
+                  <Lock className="h-3.5 w-3.5" />
+                  Coming on Mainnet
+                </span>
+              ) : null}
+
+              <p className="font-display text-3xl uppercase tracking-[0.08em] text-text-primary">
+                {tier.name}
+              </p>
+              <p className="mt-6 font-display text-5xl uppercase tracking-[0.06em] text-accent">
+                {tier.price}
+              </p>
+              <p className="mt-2 text-sm text-text-secondary">{tier.descriptor}</p>
+
+              <div className="mt-6 h-px bg-border" />
+
+              <div className="mt-6 space-y-3">
+                {tier.features.map((feature) => (
+                  <p
+                    key={feature}
+                    className="flex items-start gap-3 text-sm text-text-secondary"
+                  >
+                    {'locked' in tier && tier.locked ? (
+                      <Lock className="mt-0.5 h-4 w-4 shrink-0 text-text-muted" />
+                    ) : (
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                    )}
+                    <span>{feature}</span>
+                  </p>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                className={`mt-8 inline-flex w-full items-center justify-center rounded-lg px-6 py-3 text-sm font-semibold transition duration-150 ease-out active:scale-[0.97] ${
+                  tier.emphasized
+                    ? 'bg-accent-hot text-white hover:scale-[1.02] hover:brightness-110'
+                    : tier.name === 'Whale' && stakeMode === 'Testnet'
+                      ? 'border border-border bg-transparent text-text-primary hover:border-text-muted hover:bg-bg-input'
+                      : 'border border-border bg-transparent text-text-primary hover:border-text-muted hover:bg-bg-input'
+                }`}
+              >
+                {tier.cta}
+              </button>
+            </article>
+          ))}
         </div>
       </section>
     </div>

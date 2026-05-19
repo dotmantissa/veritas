@@ -1,8 +1,9 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { Telescope } from 'lucide-react'
+import Link from 'next/link'
 
-import { MARKET_CATEGORIES } from '@/lib/constants'
 import type { Market, MarketCategory, MarketStatus } from '@/lib/types'
 
 import { MarketCard } from './MarketCard'
@@ -19,6 +20,15 @@ export function MarketGrid({ markets }: { markets: Market[] }) {
   const [status, setStatus] = useState<'All' | MarketStatus>('All')
   const [category, setCategory] = useState<'All' | MarketCategory>('All')
 
+  const categoryFilters: Array<'All' | MarketCategory> = [
+    'All',
+    'Sports',
+    'Finance',
+    'Crypto',
+    'Weather',
+    'Politics',
+  ]
+
   const filteredMarkets = useMemo(() => {
     return markets.filter((market) => {
       const statusMatch = status === 'All' || market.status === status
@@ -29,17 +39,17 @@ export function MarketGrid({ markets }: { markets: Market[] }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 rounded-[1.75rem] border border-white/10 bg-white/5 p-5 lg:flex-row lg:items-center lg:justify-between">
+      <div className="space-y-4 rounded-xl border border-border bg-bg-card p-5">
         <div className="flex flex-wrap gap-2">
-          {statusFilters.map((filter) => (
+          {categoryFilters.map((filter) => (
             <button
               key={filter}
               type="button"
-              onClick={() => setStatus(filter)}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                status === filter
-                  ? 'bg-cyan-300 text-slate-950'
-                  : 'border border-white/10 bg-white/5 text-slate-300 hover:border-cyan-400/30 hover:text-white'
+              onClick={() => setCategory(filter)}
+              className={`rounded-full border px-4 py-2 text-sm transition ${
+                category === filter
+                  ? 'border-accent-hot bg-accent-hot text-white'
+                  : 'border-border bg-bg-card text-text-secondary hover:border-text-muted hover:text-text-primary'
               }`}
             >
               {filter}
@@ -47,37 +57,47 @@ export function MarketGrid({ markets }: { markets: Market[] }) {
           ))}
         </div>
 
-        <label className="flex items-center gap-3 rounded-full border border-white/10 bg-slate-950/60 px-4 py-2 text-sm text-slate-300">
-          <span>Category</span>
-          <select
-            value={category}
-            onChange={(event) =>
-              setCategory(event.target.value as 'All' | MarketCategory)
-            }
-            className="bg-transparent text-sm text-white outline-none"
-          >
-            <option value="All">All</option>
-            {MARKET_CATEGORIES.map((entry) => (
-              <option key={entry} value={entry}>
-                {entry}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="flex flex-wrap gap-2">
+          {statusFilters.map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              onClick={() => setStatus(filter)}
+              className={`rounded-full border px-4 py-2 text-sm transition ${
+                status === filter
+                  ? 'border-accent-hot bg-accent-hot text-white'
+                  : 'border-border bg-bg-card text-text-secondary hover:border-text-muted hover:text-text-primary'
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
       </div>
 
       {filteredMarkets.length > 0 ? (
-        <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredMarkets.map((market) => (
             <MarketCard key={market.id} market={market} />
           ))}
         </div>
       ) : (
-        <div className="rounded-[1.75rem] border border-dashed border-white/10 bg-white/5 px-6 py-12 text-center">
-          <p className="text-lg font-medium text-white">No markets match this filter.</p>
-          <p className="mt-2 text-sm text-slate-400">
-            Try another status or category to inspect the seeded Rialo simulation.
+        <div className="rounded-xl border border-dashed border-border bg-bg-card px-6 py-14 text-center">
+          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-bg-surface text-accent">
+            <Telescope className="h-5 w-5" />
+          </span>
+          <p className="mt-5 text-lg font-semibold text-text-primary">
+            No markets here yet.
           </p>
+          <p className="mt-2 text-sm text-text-secondary">
+            Try another filter, or create the next market yourself.
+          </p>
+          <Link
+            href="/markets/create"
+            className="mt-6 inline-flex items-center justify-center rounded-lg bg-accent-hot px-6 py-3 text-sm font-semibold text-white transition duration-150 ease-out hover:scale-[1.02] hover:brightness-110 active:scale-[0.97]"
+          >
+            Create the first one →
+          </Link>
         </div>
       )}
     </div>

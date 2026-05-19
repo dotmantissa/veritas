@@ -42,22 +42,22 @@ export function WalletModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 px-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(8,8,8,0.82)] px-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label="Connect to Veritas"
     >
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-slate-900 p-6 shadow-2xl shadow-cyan-950/30">
+      <div className="w-full max-w-md rounded-xl border border-border bg-bg-card p-6">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-cyan-200">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.18em] text-text-muted">
               <WandSparkles className="h-3.5 w-3.5" />
               Rialo Account Abstraction
             </div>
-            <h2 className="mt-4 text-2xl font-semibold text-white">
+            <h2 className="mt-4 font-display text-4xl uppercase tracking-[0.06em] text-text-primary">
               Connect to Veritas
             </h2>
-            <p className="mt-2 text-sm text-slate-300">
+            <p className="mt-2 text-sm text-text-secondary">
               Powered by Rialo account abstraction
             </p>
           </div>
@@ -65,7 +65,7 @@ export function WalletModal({
             type="button"
             onClick={onClose}
             disabled={isConnecting}
-            className="rounded-full border border-white/10 px-3 py-1.5 text-sm text-slate-300 transition hover:border-white/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-full border border-border px-3 py-1.5 text-sm text-text-secondary transition hover:border-text-muted hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
           >
             Close
           </button>
@@ -81,9 +81,9 @@ export function WalletModal({
                 type="button"
                 onClick={() => void onConnect(option.label)}
                 disabled={isConnecting}
-                className="flex w-full items-center gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-left transition hover:border-cyan-400/40 hover:bg-cyan-400/10 disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex w-full items-center gap-4 rounded-xl border border-border bg-bg-surface px-4 py-4 text-left transition hover:border-text-muted hover:bg-bg-card-hover disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-400/15 text-cyan-200">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-bg-base text-accent">
                   {isConnecting ? (
                     <Loader2 className="h-5 w-5 animate-spin" />
                   ) : (
@@ -91,10 +91,10 @@ export function WalletModal({
                   )}
                 </span>
                 <span className="flex-1">
-                  <span className="block text-base font-medium text-white">
+                  <span className="block text-base font-medium text-text-primary">
                     {option.title}
                   </span>
-                  <span className="mt-1 block text-sm text-slate-300">
+                  <span className="mt-1 block text-sm text-text-secondary">
                     {isConnecting ? 'Authenticating...' : option.subtitle}
                   </span>
                 </span>
@@ -103,7 +103,7 @@ export function WalletModal({
           })}
         </div>
 
-        <p className="mt-6 text-sm text-slate-400">
+        <p className="mt-6 text-sm text-text-muted">
           No seed phrase. No browser extension. Rialo handles key management.
         </p>
       </div>

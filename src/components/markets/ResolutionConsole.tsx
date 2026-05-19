@@ -20,32 +20,60 @@ export function ResolutionConsole({
     node.scrollTop = node.scrollHeight
   }, [logLines])
 
+  function getLineClass(line: string): string {
+    if (line.includes('Consensus failed') || line.includes('timeout') || line.includes('error')) {
+      return 'text-accent-hot'
+    }
+
+    if (line.includes('Consensus reached') || line.includes('Market resolved') || line.includes('✓')) {
+      return 'text-status-open'
+    }
+
+    if (line.includes('[Block #')) {
+      return 'text-accent'
+    }
+
+    return 'text-text-secondary'
+  }
+
   return (
-    <section className="rounded-[2rem] border border-white/10 bg-[#050816] p-6 shadow-2xl shadow-black/30">
-      <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-        <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-cyan-400/10 text-cyan-200">
-          <TerminalSquare className="h-5 w-5" />
-        </span>
-        <div>
-          <h2 className="text-xl font-semibold text-white">Resolution Console</h2>
-          <p className="text-sm text-slate-400">
-            Live log replay of the Rialo async source consensus flow.
-          </p>
+    <section className="rounded-xl border border-border bg-bg-card p-6">
+      <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-bg-surface text-accent">
+            <TerminalSquare className="h-5 w-5" />
+          </span>
+          <div>
+            <h2 className="font-display text-2xl uppercase tracking-[0.08em] text-text-primary">
+              Resolution Console
+            </h2>
+            <p className="text-sm text-text-secondary">
+              Live log replay of the Rialo async source consensus flow.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="h-3 w-3 rounded-full bg-accent-hot" />
+          <span className="h-3 w-3 rounded-full bg-accent" />
+          <span className="h-3 w-3 rounded-full bg-status-open" />
         </div>
       </div>
 
       <div
         ref={containerRef}
-        className="mt-5 max-h-[26rem] overflow-y-auto rounded-2xl border border-white/10 bg-black/30 p-4 font-mono text-sm leading-7 text-emerald-200"
+        className="mt-5 max-h-[26rem] overflow-y-auto rounded-xl border border-border bg-bg-base p-4 font-mono text-sm leading-7 text-status-open"
       >
         {logLines.length > 0 ? (
           logLines.map((line, index) => (
-            <p key={`${line}-${index}`} className="whitespace-pre-wrap break-words">
+            <p
+              key={`${line}-${index}`}
+              className={`console-line whitespace-pre-wrap break-words ${getLineClass(line)}`}
+            >
               {line}
             </p>
           ))
         ) : (
-          <p className="text-slate-500">
+          <p className="text-text-muted">
             Resolution has not started yet. Once triggered, each source fetch and
             consensus step will appear here in sequence.
           </p>
