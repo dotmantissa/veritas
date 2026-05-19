@@ -26,8 +26,30 @@ const dmMono = DM_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Veritas',
-  description: 'Mock Rialo testnet prediction market dApp',
+  metadataBase: new URL('https://veritas-mock.vercel.app'),
+  title: 'Veritas — Prediction Markets Powered by Truth',
+  description:
+    'Oracle-free prediction markets that self-resolve by reading the internet. No reporters. No disputes. Powered by Rialo.',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: '32x32' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
+  openGraph: {
+    title: 'Veritas — Truth From Consensus',
+    description:
+      'Prediction markets where the internet resolves the outcome. No oracles. No gatekeepers.',
+    images: [{ url: '/og-image.svg', width: 1200, height: 630 }],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Veritas',
+    description: 'Oracle-free prediction markets on Rialo.',
+    images: ['/og-image.svg'],
+  },
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {

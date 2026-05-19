@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { useParams } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   ArrowLeft,
   BadgeInfo,
@@ -57,6 +57,20 @@ export default function MarketDetailPage() {
     currentMarket.status === 'Open' &&
     currentMarket.deadline < Date.now() &&
     wallet?.connected
+
+  useEffect(() => {
+    const previousTitle = document.title
+    const trimmedQuestion =
+      currentMarket.question.length > 60
+        ? `${currentMarket.question.slice(0, 60)}...`
+        : currentMarket.question
+
+    document.title = `${trimmedQuestion} — Veritas`
+
+    return () => {
+      document.title = previousTitle
+    }
+  }, [currentMarket.question])
 
   async function handleTriggerResolution(): Promise<void> {
     if (!wallet || !wallet.connected) {

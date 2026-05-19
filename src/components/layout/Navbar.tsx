@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Menu, X } from 'lucide-react'
 
+import { LogoFull } from '@/components/brand'
 import { WalletButton } from '@/components/wallet/WalletButton'
 
 export function Navbar() {
@@ -34,12 +35,7 @@ export function Navbar() {
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-8">
             <Link href="/" className="group" onClick={() => setIsMenuOpen(false)}>
-              <div className="flex items-center gap-3">
-                <span className="font-display text-xl uppercase tracking-[0.08em] text-accent sm:text-2xl">
-                  <span className="mr-2 text-accent-hot">◈</span>
-                  Veritas
-                </span>
-              </div>
+              <LogoFull size="md" />
             </Link>
 
             <nav className="hidden items-center gap-6 md:flex">

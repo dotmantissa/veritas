@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 
+import { LogoFull } from '@/components/brand'
 import { useChainStore } from '@/store/chainStore'
 
 export function Footer() {
@@ -12,9 +13,7 @@ export function Footer() {
       <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="font-display text-3xl uppercase tracking-[0.08em] text-accent">
-              Veritas
-            </p>
+            <LogoFull size="lg" />
             <p className="mt-3 max-w-sm text-sm text-text-muted">
               Truth from consensus. Not gatekeepers.
             </p>

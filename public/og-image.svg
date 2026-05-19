@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <radialGradient id="goldGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(210 140) rotate(21) scale(360 240)">
+      <stop stop-color="#E8C547" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#E8C547" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="hotGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(980 500) rotate(-18) scale(320 240)">
+      <stop stop-color="#FF4D6D" stop-opacity="0.04"/>
+      <stop offset="1" stop-color="#FF4D6D" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#080808"/>
+  <rect width="1200" height="630" fill="url(#goldGlow)"/>
+  <rect width="1200" height="630" fill="url(#hotGlow)"/>
+
+  <g stroke="#242424" stroke-width="2">
+    <path d="M46 86V46H86"/>
+    <path d="M1114 46H1154V86"/>
+    <path d="M46 544V584H86"/>
+    <path d="M1114 584H1154V544"/>
+  </g>
+
+  <g transform="translate(600 270)">
+    <g transform="translate(-80 -86)">
+      <g stroke="#E8C547" stroke-linecap="round" stroke-linejoin="round" stroke-width="8" fill="none">
+        <path d="M4 6L109 48"/>
+        <path d="M4 48H109"/>
+        <path d="M4 90L109 48"/>
+      </g>
+      <circle cx="109" cy="48" r="11" fill="#E8C547"/>
+    </g>
+    <text
+      x="0"
+      y="72"
+      fill="#E8C547"
+      font-family="'Bebas Neue', Impact, sans-serif"
+      font-size="80"
+      font-weight="700"
+      letter-spacing="0.08em"
+      text-anchor="middle"
+    >
+      VERITAS
+    </text>
+    <text
+      x="0"
+      y="116"
+      fill="#888888"
+      font-family="'DM Sans', Arial, sans-serif"
+      font-size="24"
+      text-anchor="middle"
+    >
+      Truth from consensus. Not gatekeepers.
+    </text>
+  </g>
+
+  <text
+    x="600"
+    y="590"
+    fill="#555555"
+    font-family="'DM Mono', monospace"
+    font-size="16"
+    letter-spacing="0.06em"
+    text-anchor="middle"
+  >
+    ◈ Powered by Rialo
+  </text>
+</svg>
