@@ -1,17 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { isToday } from 'date-fns'
 import {
   ArrowRight,
-  BadgeDollarSign,
   BrainCircuit,
-  CandlestickChart,
-  Check,
   Clock3,
-  Globe2,
-  Lock,
   ShieldCheck,
   Sparkles,
   Zap,
@@ -21,8 +16,6 @@ import { MarketCard } from '@/components/markets/MarketCard'
 import { SectionTitle } from '@/components/ui/SectionTitle'
 import { StatCallout } from '@/components/ui/StatCallout'
 import { useMarketStore } from '@/store/marketStore'
-
-type StakeTierMode = 'Testnet' | 'Mainnet'
 
 const featureCards = [
   {
@@ -83,99 +76,7 @@ const workflowSteps = [
   },
 ] as const
 
-const testnetTiers = [
-  {
-    name: 'Starter',
-    price: 'FREE',
-    descriptor: '100 RIALO starting balance',
-    features: [
-      'All market types',
-      '100 RIALO starting balance',
-      'Basic resolution view',
-      '3 open positions max',
-    ],
-    cta: 'Get Started',
-    emphasized: false,
-  },
-  {
-    name: 'Predictor',
-    price: '500 RIALO',
-    descriptor: 'per market max stake',
-    features: [
-      'Everything in Starter',
-      'Priority in pool splits',
-      'Resolution console access',
-      'Unlimited positions',
-      'Portfolio analytics',
-    ],
-    cta: 'Start Predicting',
-    emphasized: true,
-  },
-  {
-    name: 'Whale',
-    price: '5,000 RIALO',
-    descriptor: 'no limit',
-    features: [
-      'Everything in Predictor',
-      'Early market creation',
-      'Multi-outcome markets',
-      'Custom sources',
-      'Dedicated support',
-    ],
-    cta: 'Contact Team',
-    emphasized: false,
-  },
-] as const
-
-const mainnetTiers = [
-  {
-    name: 'Starter',
-    price: 'FREE',
-    descriptor: 'public launch access',
-    features: [
-      'All market types',
-      'Gasless login',
-      'Basic resolution view',
-      'Limited open positions',
-    ],
-    cta: 'Join Waitlist',
-    emphasized: false,
-    locked: false,
-  },
-  {
-    name: 'Predictor',
-    price: '500 RIALO',
-    descriptor: 'coming on mainnet',
-    features: [
-      'Everything in Starter',
-      'Priority in pool splits',
-      'Resolution console access',
-      'Unlimited positions',
-      'Portfolio analytics',
-    ],
-    cta: 'Coming on Mainnet',
-    emphasized: true,
-    locked: true,
-  },
-  {
-    name: 'Whale',
-    price: '5,000 RIALO',
-    descriptor: 'coming on mainnet',
-    features: [
-      'Everything in Predictor',
-      'Early market creation',
-      'Multi-outcome markets',
-      'Custom sources',
-      'Dedicated support',
-    ],
-    cta: 'Coming on Mainnet',
-    emphasized: false,
-    locked: true,
-  },
-] as const
-
 export default function HomePage() {
-  const [stakeMode, setStakeMode] = useState<StakeTierMode>('Testnet')
   const markets = useMarketStore((state) => state.markets)
 
   const totalVolume = useMemo(
@@ -207,8 +108,6 @@ export default function HomePage() {
         .slice(0, 3),
     [markets]
   )
-
-  const stakeTiers = stakeMode === 'Testnet' ? testnetTiers : mainnetTiers
 
   return (
     <div className="space-y-0">
@@ -440,98 +339,6 @@ export default function HomePage() {
               </article>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="bg-bg-surface px-6 py-16 sm:px-8 lg:px-10">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <SectionTitle
-            title="SIMPLE STAKES"
-            accentWord="STAKES"
-            subtitle="Start free. Bet what you believe."
-          />
-
-          <div className="inline-flex rounded-full border border-border bg-bg-card p-1">
-            {(['Testnet', 'Mainnet'] as StakeTierMode[]).map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => setStakeMode(mode)}
-                className={`rounded-full px-5 py-2 text-sm font-medium transition ${
-                  stakeMode === mode
-                    ? 'bg-accent-hot text-white'
-                    : 'text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                {mode}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
-          {stakeTiers.map((tier) => (
-            <article
-              key={tier.name}
-              className={`relative rounded-xl border bg-bg-card p-6 transition duration-200 ease-out hover:border-text-muted hover:bg-bg-card-hover ${
-                tier.emphasized
-                  ? 'border-accent-hot shadow-[0_0_0_1px_var(--accent-hot)]'
-                  : 'border-border'
-              }`}
-            >
-              {tier.emphasized ? (
-                <span className="absolute right-5 top-5 rounded-full bg-accent-hot px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.05em] text-white">
-                  Most Popular
-                </span>
-              ) : null}
-
-              {('locked' in tier && tier.locked) ? (
-                <span className="absolute left-5 top-5 inline-flex items-center gap-2 rounded-full border border-border bg-bg-surface px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted">
-                  <Lock className="h-3.5 w-3.5" />
-                  Coming on Mainnet
-                </span>
-              ) : null}
-
-              <p className="font-display text-3xl uppercase tracking-[0.08em] text-text-primary">
-                {tier.name}
-              </p>
-              <p className="mt-6 font-display text-5xl uppercase tracking-[0.06em] text-accent">
-                {tier.price}
-              </p>
-              <p className="mt-2 text-sm text-text-secondary">{tier.descriptor}</p>
-
-              <div className="mt-6 h-px bg-border" />
-
-              <div className="mt-6 space-y-3">
-                {tier.features.map((feature) => (
-                  <p
-                    key={feature}
-                    className="flex items-start gap-3 text-sm text-text-secondary"
-                  >
-                    {'locked' in tier && tier.locked ? (
-                      <Lock className="mt-0.5 h-4 w-4 shrink-0 text-text-muted" />
-                    ) : (
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                    )}
-                    <span>{feature}</span>
-                  </p>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                className={`mt-8 inline-flex w-full items-center justify-center rounded-lg px-6 py-3 text-sm font-semibold transition duration-150 ease-out active:scale-[0.97] ${
-                  tier.emphasized
-                    ? 'bg-accent-hot text-white hover:scale-[1.02] hover:brightness-110'
-                    : tier.name === 'Whale' && stakeMode === 'Testnet'
-                      ? 'border border-border bg-transparent text-text-primary hover:border-text-muted hover:bg-bg-input'
-                      : 'border border-border bg-transparent text-text-primary hover:border-text-muted hover:bg-bg-input'
-                }`}
-              >
-                {tier.cta}
-              </button>
-            </article>
-          ))}
         </div>
       </section>
     </div>
