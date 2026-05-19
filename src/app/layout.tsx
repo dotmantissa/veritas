@@ -27,7 +27,7 @@ const dmMono = DM_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://veritas-mock.vercel.app'),
-  title: 'Veritas — Prediction Markets Powered by Truth',
+  title: 'Veritas: Prediction Markets Powered by Truth',
   description:
     'Oracle-free prediction markets that self-resolve by reading the internet. No reporters. No disputes. Powered by Rialo.',
   icons: {
