@@ -61,6 +61,7 @@ export function TxToast() {
           `Confirmed in block #${currentBlock} — ${record.description}`,
           {
             id: key,
+            duration: 5_000,
             description: (
               <Link
                 href={`${RIALO_EXPLORER}/tx/${record.signature}`}
