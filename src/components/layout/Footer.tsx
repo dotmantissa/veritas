@@ -9,8 +9,9 @@ export function Footer() {
   const currentBlock = useChainStore((state) => state.currentBlock)
 
   return (
-    <footer className="border-t border-border bg-bg-base">
-      <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <footer className="relative border-t border-border bg-bg-base">
+      <div className="gradient-divider absolute inset-x-12 top-0" />
+      <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <div>
             <LogoFull size="lg" />
@@ -35,13 +36,16 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="mt-8 flex flex-col gap-3 border-t border-border pt-5 font-mono text-xs uppercase tracking-[0.12em] text-text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            <span className="mr-2 text-accent-hot">◈</span>
+        <div className="mt-10 flex flex-col gap-3 border-t border-border pt-6 font-mono text-xs uppercase tracking-[0.12em] text-text-muted sm:flex-row sm:items-center sm:justify-between">
+          <p className="inline-flex items-center gap-2">
+            <span className="text-accent-hot">◈</span>
             Powered by Rialo
           </p>
-          <p>
-            <span className="mr-2 text-status-open">●</span>
+          <p className="inline-flex items-center gap-2">
+            <span className="relative inline-flex h-2 w-2 items-center justify-center">
+              <span className="absolute inset-0 rounded-full bg-status-open/40 motion-safe:animate-ping" />
+              <span className="relative h-1.5 w-1.5 rounded-full bg-status-open" />
+            </span>
             Block #{currentBlock}
           </p>
         </div>

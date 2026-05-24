@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, TrendingUp } from 'lucide-react'
 
 import { FEE_BPS, MIN_BET } from '@/lib/constants'
 import { placeBet } from '@/lib/mock/contract'
@@ -81,18 +81,19 @@ export function BetPanel({ market }: { market: Market }) {
   }
 
   return (
-    <aside className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-bg-base/95 p-4 backdrop-blur lg:static lg:z-auto lg:rounded-xl lg:border lg:bg-bg-card lg:p-6">
+    <aside className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-bg-base/95 p-4 backdrop-blur-xl shadow-[0_-12px_32px_-12px_rgba(0,0,0,0.6)] lg:static lg:z-auto lg:rounded-xl lg:border lg:bg-bg-card lg:p-6 lg:shadow-card-elevated">
       <h2 className="font-display text-3xl uppercase tracking-[0.08em] text-text-primary">
-        Place Your Bet
+        Place Your <span className="accent-text-gradient">Bet</span>
       </h2>
       <p className="mt-2 text-sm leading-7 text-text-secondary">
         Choose an outcome, size your position, and submit a simulated Rialo
-        transaction with confirmation timing and persistent state.
+        transaction with confirmation timing.
       </p>
 
       {wallet && wallet.connected ? (
-        <p className="mt-5 rounded-xl border border-border bg-bg-surface px-4 py-3 text-sm text-text-primary">
-          Available: {formatRIALO(wallet.balance)}
+        <p className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-border bg-bg-surface px-4 py-3 text-sm text-text-primary">
+          <span className="text-text-muted">Available</span>
+          <span className="font-mono">{formatRIALO(wallet.balance)}</span>
         </p>
       ) : (
         <p className="mt-5 rounded-xl border border-border bg-bg-surface px-4 py-3 text-sm text-text-secondary">
@@ -101,37 +102,45 @@ export function BetPanel({ market }: { market: Market }) {
       )}
 
       <div className="mt-6 grid grid-cols-2 gap-3">
-        {market.outcome_labels.map((outcome, index) => (
-          <button
-            key={outcome}
-            type="button"
-            onClick={() => setSelectedOutcome(index)}
-            className={`rounded-xl border px-4 py-3 text-left transition ${
-              selectedOutcome === index
-                ? 'border-accent bg-accent-subtle text-text-primary'
-                : 'border-border bg-bg-surface text-text-secondary hover:border-text-muted hover:text-text-primary'
-            }`}
-          >
-            <span className="block text-sm font-semibold">{outcome}</span>
-            <span className="mt-1 block font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted">
-              {market.total_pool > 0
-                ? `${(((market.outcome_pools[index] ?? 0) / market.total_pool) * 100).toFixed(1)}%`
-                : '0.0%'}
-            </span>
-          </button>
-        ))}
+        {market.outcome_labels.map((outcome, index) => {
+          const selected = selectedOutcome === index
+          const dot =
+            index === 0 ? 'bg-accent' : index === 1 ? 'bg-accent-hot' : 'bg-status-resolved'
+          return (
+            <button
+              key={outcome}
+              type="button"
+              onClick={() => setSelectedOutcome(index)}
+              className={`group relative overflow-hidden rounded-xl border px-4 py-3 text-left transition-all duration-150 ${
+                selected
+                  ? 'border-accent bg-accent-subtle text-text-primary shadow-accent-glow'
+                  : 'border-border bg-bg-surface text-text-secondary hover:-translate-y-0.5 hover:border-border-strong hover:text-text-primary'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <span className={`h-2 w-2 rounded-full ${dot}`} />
+                <span className="block text-sm font-semibold">{outcome}</span>
+              </div>
+              <span className="mt-1.5 block font-mono text-[11px] uppercase tracking-[0.12em] text-text-muted">
+                {market.total_pool > 0
+                  ? `${(((market.outcome_pools[index] ?? 0) / market.total_pool) * 100).toFixed(1)}%`
+                  : '0.0%'}
+              </span>
+            </button>
+          )
+        })}
       </div>
 
       <label className="mt-6 block">
         <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted">
           Stake Amount
         </span>
-        <div className="flex items-center rounded-xl border border-border bg-bg-input px-4 py-3">
+        <div className="flex items-center rounded-xl border border-border bg-bg-input px-4 py-3 transition focus-within:border-accent focus-within:shadow-[0_0_0_4px_rgba(232,197,71,0.12)]">
           <input
             value={amount}
             onChange={(event) => setAmount(event.target.value)}
             inputMode="decimal"
-            className="w-full border-0 bg-transparent p-0 text-right font-mono text-2xl text-text-primary shadow-none outline-none ring-0"
+            className="w-full border-0 bg-transparent p-0 text-right font-mono text-2xl text-text-primary shadow-none outline-none ring-0 focus:shadow-none"
             placeholder="100"
           />
           <span className="ml-3 text-sm text-text-muted">RIALO</span>
@@ -144,7 +153,11 @@ export function BetPanel({ market }: { market: Market }) {
             key={quickAmount}
             type="button"
             onClick={() => setAmount(String(quickAmount))}
-            className="rounded-full border border-border bg-bg-surface px-3 py-1.5 text-sm text-text-secondary transition hover:border-text-muted hover:text-text-primary"
+            className={`rounded-full border px-3 py-1.5 text-sm transition ${
+              Number(amount) === quickAmount
+                ? 'border-accent bg-accent-subtle text-accent'
+                : 'border-border bg-bg-surface text-text-secondary hover:border-border-strong hover:text-text-primary'
+            }`}
           >
             {quickAmount}
           </button>
@@ -152,25 +165,31 @@ export function BetPanel({ market }: { market: Market }) {
         <button
           type="button"
           onClick={() => setAmount(String(wallet?.balance ?? 0))}
-          className="rounded-full border border-border bg-bg-surface px-3 py-1.5 text-sm text-text-secondary transition hover:border-text-muted hover:text-text-primary"
+          className="rounded-full border border-border bg-bg-surface px-3 py-1.5 text-sm text-text-secondary transition hover:border-border-strong hover:text-text-primary"
         >
           MAX
         </button>
       </div>
 
-      <div className="mt-6 rounded-xl border border-border-subtle bg-bg-surface p-4">
-        <p className="text-sm text-text-secondary">
-          If{' '}
-          <span className="font-semibold text-text-primary">
-            {market.outcome_labels[selectedOutcome]}
-          </span>{' '}
-          wins
-        </p>
-        <p className="mt-2 font-display text-4xl uppercase tracking-[0.06em] text-accent">
+      <div className="mt-6 overflow-hidden rounded-xl border border-border-subtle bg-gradient-to-br from-accent-subtle to-transparent p-4">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-sm text-text-secondary">
+            If{' '}
+            <span className="font-semibold text-text-primary">
+              {market.outcome_labels[selectedOutcome]}
+            </span>{' '}
+            wins
+          </p>
+          <span className="inline-flex items-center gap-1 rounded-full border border-status-open/30 bg-status-open/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-status-open">
+            <TrendingUp className="h-3 w-3" />
+            Payout
+          </span>
+        </div>
+        <p className="mt-2 font-display text-4xl uppercase tracking-[0.06em] accent-text-gradient">
           {formatRIALO(previewPayout)}
         </p>
         <p className="mt-1 text-xs uppercase tracking-[0.18em] text-text-muted">
-          {returnMultiple > 0 ? `${returnMultiple.toFixed(1)}x return` : '0.0x return'}
+          {returnMultiple > 0 ? `${returnMultiple.toFixed(2)}× return` : '0.00× return'}
         </p>
       </div>
 
@@ -180,9 +199,9 @@ export function BetPanel({ market }: { market: Market }) {
         type="button"
         onClick={() => void handleSubmit()}
         disabled={!wallet?.connected || isSubmitting}
-        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 font-display text-2xl uppercase tracking-[0.08em] text-bg-base transition duration-150 ease-out hover:scale-[1.02] hover:brightness-110 active:scale-[0.97] disabled:cursor-not-allowed disabled:border disabled:border-dashed disabled:border-border disabled:bg-bg-surface disabled:text-text-muted disabled:hover:scale-100 disabled:hover:brightness-100"
+        className="button-primary mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 font-display text-2xl uppercase tracking-[0.08em] text-bg-base disabled:cursor-not-allowed disabled:border disabled:border-dashed disabled:border-border disabled:bg-bg-surface disabled:text-text-muted disabled:shadow-none disabled:hover:translate-y-0 disabled:hover:scale-100 disabled:hover:brightness-100"
       >
-        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+        {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : null}
         Place Bet →
       </button>
 

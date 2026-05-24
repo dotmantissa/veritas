@@ -61,7 +61,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="bg-bg-base font-body text-text-primary antialiased">
         <div className="veritas-grid min-h-screen">
           <Navbar />
-          <main className="mx-auto w-full max-w-7xl flex-1 px-4 pb-8 pt-28 sm:px-6 lg:px-8">
+          <main className="mx-auto w-full max-w-7xl flex-1 px-4 pb-12 pt-28 sm:px-6 lg:px-8">
             {children}
           </main>
           <Footer />

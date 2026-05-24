@@ -124,47 +124,64 @@ export default function PortfolioPage() {
 
   if (!wallet?.connected) {
     return (
-      <section className="rounded-xl border border-border bg-bg-card p-8">
-        <SectionTitle
-          title="Your Portfolio"
-          accentWord="Portfolio"
-          subtitle="Connect wallet to inspect your positions, claim payouts, and recover refunds from disputed markets."
+      <section className="card-elevated relative overflow-hidden rounded-2xl p-10">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-24 -right-16 h-64 w-64 rounded-full bg-accent/8 blur-3xl"
         />
-        <div className="mt-6">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-bg-surface text-accent">
-            <Telescope className="h-5 w-5" />
-          </span>
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-accent-hot/8 blur-3xl"
+        />
+        <div className="relative">
+          <SectionTitle
+            title="Your Portfolio"
+            accentWord="Portfolio"
+            subtitle="Connect wallet to inspect your positions, claim payouts, and recover refunds from disputed markets."
+          />
+          <div className="mt-6">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-bg-surface text-accent shadow-accent-glow">
+              <Telescope className="h-5 w-5" />
+            </span>
+          </div>
+          <p className="mt-4 max-w-2xl text-text-secondary">
+            Connect wallet to inspect your positions, claim payouts, and recover
+            refunds from disputed markets.
+          </p>
+          <Link
+            href="/markets"
+            className="button-primary mt-6 inline-flex rounded-lg bg-accent-hot px-6 py-3 text-sm font-semibold text-white"
+          >
+            Browse Markets
+          </Link>
         </div>
-        <p className="mt-4 max-w-2xl text-text-secondary">
-          Connect wallet to inspect your positions, claim payouts, and recover
-          refunds from disputed markets.
-        </p>
-        <Link
-          href="/markets"
-          className="mt-6 inline-flex rounded-lg bg-accent-hot px-6 py-3 text-sm font-semibold text-white transition duration-150 ease-out hover:scale-[1.02] hover:brightness-110 active:scale-[0.97]"
-        >
-          Browse Markets
-        </Link>
       </section>
     )
   }
 
   return (
     <div className="space-y-8">
-      <section className="rounded-xl border border-border bg-bg-card p-8 fade-up">
-        <SectionTitle
-          title="Your Portfolio"
-          accentWord="Portfolio"
-          subtitle="Track positions, payouts, and refund eligibility across your mock Rialo wallet."
+      <section className="card-elevated relative overflow-hidden rounded-2xl p-8 fade-up">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-24 -right-16 h-64 w-64 rounded-full bg-accent/8 blur-3xl"
         />
-        <p className="mt-4 font-mono text-sm text-text-muted">
-          {formatAddress(wallet.address)} · {wallet.label}
-        </p>
+        <div className="relative">
+          <SectionTitle
+            title="Your Portfolio"
+            accentWord="Portfolio"
+            subtitle="Track positions, payouts, and refund eligibility across your mock Rialo wallet."
+          />
+          <p className="mt-4 inline-flex items-center gap-2 rounded-full border border-border bg-bg-surface px-3 py-1.5 font-mono text-sm text-text-muted">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+            {formatAddress(wallet.address)} · {wallet.label}
+          </p>
+        </div>
       </section>
 
       <PortfolioSummary {...summary} />
 
-      <section className="rounded-xl border border-border bg-bg-card p-6">
+      <section className="card-elevated rounded-xl p-6">
         <div className="flex flex-wrap gap-2">
           {(['Open Positions', 'Claimable', 'History'] as PortfolioTab[]).map(
             (entry) => (
@@ -172,10 +189,10 @@ export default function PortfolioPage() {
                 key={entry}
                 type="button"
                 onClick={() => setTab(entry)}
-                className={`rounded-full border px-4 py-2 text-sm font-medium transition ${
+                className={`rounded-full border px-4 py-2 text-sm font-medium transition-all duration-150 ${
                   tab === entry
-                    ? 'border-accent-hot bg-accent-hot text-white'
-                    : 'border-border bg-bg-surface text-text-secondary hover:border-text-muted hover:text-text-primary'
+                    ? 'border-accent bg-accent-subtle text-accent shadow-accent-glow'
+                    : 'border-border bg-bg-surface text-text-secondary hover:-translate-y-0.5 hover:border-border-strong hover:text-text-primary'
                 }`}
               >
                 {entry}
@@ -194,7 +211,7 @@ export default function PortfolioPage() {
               />
             ))
           ) : (
-            <div className="rounded-xl border border-dashed border-border bg-bg-surface px-6 py-12 text-center">
+            <div className="rounded-xl border border-dashed border-border bg-bg-surface/60 px-6 py-12 text-center">
               <p className="text-lg font-medium text-text-primary">
                 Nothing to show in {tab.toLowerCase()}.
               </p>

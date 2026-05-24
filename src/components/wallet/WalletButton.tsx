@@ -68,7 +68,7 @@ export function WalletButton() {
           type="button"
           onClick={() => setIsModalOpen(true)}
           disabled={isConnecting}
-          className="inline-flex items-center gap-2 rounded-full border border-border bg-transparent px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-text-muted hover:bg-accent-hot hover:text-white active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-70"
+          className="button-primary inline-flex items-center gap-2 rounded-full bg-accent-hot px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isConnecting ? (
             <>
@@ -98,19 +98,19 @@ export function WalletButton() {
         <button
           type="button"
           onClick={() => setIsOpen((current) => !current)}
-          className="inline-flex items-center gap-3 rounded-full border border-border bg-bg-card px-4 py-2 text-sm text-text-primary transition hover:border-text-muted hover:bg-bg-card-hover active:scale-[0.97]"
+          className="inline-flex items-center gap-3 rounded-full border border-border bg-bg-card px-4 py-2 text-sm text-text-primary transition hover:border-border-strong hover:bg-bg-card-hover active:scale-[0.97]"
         >
           <span className="hidden font-mono text-text-primary sm:block">
             {formatAddress(wallet.address)}
           </span>
-          <span className="rounded-full bg-bg-surface px-2.5 py-1 font-mono text-xs text-text-primary">
+          <span className="rounded-full bg-accent-subtle px-2.5 py-1 font-mono text-xs text-accent">
             {formatRIALO(wallet.balance)}
           </span>
           <ChevronDown className="h-4 w-4 text-text-secondary" />
         </button>
 
         {isOpen ? (
-          <div className="absolute right-0 z-40 mt-3 w-[22rem] rounded-xl border border-border bg-bg-card p-4 backdrop-blur">
+          <div className="fade-in absolute right-0 z-40 mt-3 w-[22rem] rounded-xl border border-border bg-bg-card p-4 shadow-card-elevated backdrop-blur">
             <div className="rounded-xl border border-border bg-bg-surface p-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
@@ -124,7 +124,7 @@ export function WalletButton() {
                 <button
                   type="button"
                   onClick={() => void handleCopy()}
-                  className="rounded-full border border-border p-2 text-text-secondary transition hover:border-text-muted hover:text-text-primary"
+                  className="rounded-full border border-border p-2 text-text-secondary transition hover:border-border-strong hover:text-text-primary"
                   aria-label="Copy wallet address"
                 >
                   <Copy className="h-4 w-4" />
@@ -187,7 +187,7 @@ export function WalletButton() {
                 disconnectWallet()
                 setIsOpen(false)
               }}
-              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-transparent px-4 py-3 text-sm font-medium text-text-primary transition hover:border-text-muted hover:bg-bg-input active:scale-[0.97]"
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-transparent px-4 py-3 text-sm font-medium text-text-primary transition hover:border-border-strong hover:bg-bg-input active:scale-[0.97]"
             >
               <LogOut className="h-4 w-4" />
               Disconnect

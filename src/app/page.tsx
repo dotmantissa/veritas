@@ -112,30 +112,55 @@ export default function HomePage() {
   return (
     <div className="space-y-0">
       <section
-        className="hero-noise fade-up relative overflow-hidden rounded-[20px] border border-border bg-bg-base px-6 py-14 sm:px-8 lg:min-h-[calc(100vh-9rem)] lg:px-10 lg:py-20"
+        className="hero-noise fade-up relative overflow-hidden rounded-[24px] border border-border bg-bg-base px-6 py-14 sm:px-8 lg:min-h-[calc(100vh-9rem)] lg:px-12 lg:py-20"
         style={{ backgroundColor: 'var(--bg-base)' }}
       >
-        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+        <span
+          className="hero-glow-orb"
+          aria-hidden="true"
+          style={{
+            top: '-80px',
+            left: '-40px',
+            background:
+              'radial-gradient(circle, rgba(232, 197, 71, 0.32) 0%, transparent 70%)',
+          }}
+        />
+        <span
+          className="hero-glow-orb"
+          aria-hidden="true"
+          style={{
+            bottom: '-100px',
+            right: '-60px',
+            animationDelay: '-7s',
+            background:
+              'radial-gradient(circle, rgba(255, 77, 109, 0.26) 0%, transparent 70%)',
+          }}
+        />
+
+        <div className="relative z-10 grid items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
           <div className="fade-up fade-up-delay-1">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-text-secondary">
-              <span className="text-accent-hot">◈</span>
+            <span className="inline-flex items-center gap-2 rounded-full border border-border bg-bg-surface/60 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-text-secondary backdrop-blur-xs">
+              <span className="relative inline-flex h-1.5 w-1.5 items-center justify-center">
+                <span className="absolute inset-0 rounded-full bg-accent-hot/40 motion-safe:animate-ping" />
+                <span className="relative h-1.5 w-1.5 rounded-full bg-accent-hot" />
+              </span>
               Powered by Rialo · Oracle-Free Resolution
             </span>
 
-            <h1 className="mt-8 max-w-4xl font-display text-[clamp(56px,8vw,96px)] uppercase leading-[0.9] tracking-[0.08em] text-text-primary">
+            <h1 className="mt-8 max-w-4xl font-display text-[clamp(56px,8vw,108px)] uppercase leading-[0.88] tracking-[0.06em] text-text-primary">
               Predict
               <br />
-              With <span className="text-accent">Truth</span>
+              With <span className="accent-text-gradient">Truth</span>
               <br />
               Not Trust
             </h1>
 
-            <p className="mt-6 max-w-[420px] text-[15px] leading-7 text-text-secondary md:text-base">
+            <p className="mt-7 max-w-[460px] text-[15px] leading-7 text-text-secondary md:text-base">
               Prediction markets that self-resolve by reading the internet. No
               oracles. No reporters. No disputes. Ever.
             </p>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            <div className="mt-9 grid gap-4 sm:grid-cols-3">
               <StatCallout
                 value={String(markets.length)}
                 label="Markets"
@@ -154,17 +179,17 @@ export default function HomePage() {
               />
             </div>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
               <Link
                 href="/markets"
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-accent-hot px-7 py-3 text-sm font-semibold text-white transition duration-150 ease-out hover:scale-[1.02] hover:brightness-110 active:scale-[0.97]"
+                className="button-primary inline-flex items-center justify-center gap-2 rounded-lg bg-accent-hot px-7 py-3.5 text-sm font-semibold text-white"
               >
                 Browse Markets
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href="/markets/create"
-                className="inline-flex items-center justify-center rounded-lg border border-border bg-transparent px-7 py-3 text-sm font-semibold text-text-primary transition duration-150 ease-out hover:border-text-muted hover:bg-bg-input active:scale-[0.97]"
+                className="button-secondary inline-flex items-center justify-center rounded-lg border border-border bg-transparent px-7 py-3.5 text-sm font-semibold text-text-primary hover:border-border-strong hover:bg-bg-surface"
               >
                 Create Market
               </Link>
@@ -172,14 +197,17 @@ export default function HomePage() {
           </div>
 
           <div className="fade-up fade-up-delay-2 relative mx-auto w-full max-w-[520px]">
-            <div className="absolute -top-4 left-6 rounded-full border border-border bg-bg-surface px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-accent">
-              58x Faster Resolution
+            <div className="absolute -top-4 left-6 z-10 rounded-full border border-border bg-bg-surface px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-accent shadow-accent-glow">
+              58× Faster Resolution
             </div>
             <div className="absolute inset-4 rounded-2xl border border-border bg-bg-card opacity-40 [transform:rotate(2deg)]" />
-            <div className="relative rounded-2xl border border-border bg-bg-card p-6 [transform:rotate(-2deg)] transition duration-200 ease-out hover:[transform:rotate(0deg)]">
+            <div className="relative rounded-2xl border border-border bg-bg-card p-6 [transform:rotate(-2deg)] shadow-card-elevated transition duration-300 ease-out hover:[transform:rotate(0deg)] hover:shadow-accent-glow">
               <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.16em] text-status-open">
-                  <span className="h-1.5 w-1.5 rounded-full bg-status-open" />
+                <span className="inline-flex items-center gap-2 rounded-full border border-status-open/30 bg-status-open/10 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.16em] text-status-open">
+                  <span className="relative inline-flex h-2 w-2 items-center justify-center">
+                    <span className="absolute inset-0 rounded-full bg-status-open/40 motion-safe:animate-ping" />
+                    <span className="relative h-1.5 w-1.5 rounded-full bg-status-open" />
+                  </span>
                   Live
                 </span>
                 <span className="font-mono text-xs text-text-muted">
@@ -192,7 +220,7 @@ export default function HomePage() {
               </h3>
 
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-xl border border-accent bg-accent-subtle px-4 py-4">
+                <div className="rounded-xl border border-accent/60 bg-accent-subtle px-4 py-4 shadow-accent-glow">
                   <p className="text-sm font-semibold uppercase tracking-[0.12em] text-text-primary">
                     Yes
                   </p>
@@ -210,8 +238,11 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="mt-6 h-3 overflow-hidden rounded-full bg-bg-surface">
-                <div className="h-full w-[68.3%] bg-accent transition-[width] duration-700 ease-out" />
+              <div className="mt-6 h-2.5 overflow-hidden rounded-full bg-bg-surface">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-accent-soft via-accent to-[#ffb060] transition-[width] duration-700 ease-out"
+                  style={{ width: '68.3%' }}
+                />
               </div>
 
               <div className="mt-6 flex flex-wrap gap-2">
@@ -229,7 +260,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="border-b border-t border-border bg-bg-surface px-6 py-6 sm:px-8 lg:px-10">
+      <section className="section-divider border-b border-border bg-bg-surface/60 px-6 py-7 backdrop-blur-sm sm:px-8 lg:px-10">
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCallout value={String(markets.length)} label="Total Markets Created" />
           <StatCallout
@@ -242,7 +273,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="fade-up bg-bg-base px-6 py-16 sm:px-8 lg:px-10">
+      <section className="fade-up bg-bg-base px-6 py-20 sm:px-8 lg:px-10">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <SectionTitle
             title="LIVE MARKETS"
@@ -251,9 +282,10 @@ export default function HomePage() {
           />
           <Link
             href="/markets"
-            className="text-sm text-text-secondary transition hover:text-text-primary"
+            className="group inline-flex items-center gap-2 text-sm text-text-secondary transition hover:text-text-primary"
           >
             View all markets
+            <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
           </Link>
         </div>
 
@@ -263,10 +295,10 @@ export default function HomePage() {
               <button
                 key={filter}
                 type="button"
-                className={`rounded-full border px-4 py-2 text-sm transition ${
+                className={`rounded-full border px-4 py-2 text-sm transition-all duration-150 ${
                   index === 0
-                    ? 'border-accent-hot bg-accent-hot text-white'
-                    : 'border-border bg-bg-card text-text-secondary hover:border-text-muted hover:text-text-primary'
+                    ? 'border-accent-hot bg-accent-hot text-white shadow-hot-glow'
+                    : 'border-border bg-bg-card text-text-secondary hover:-translate-y-0.5 hover:border-border-strong hover:text-text-primary'
                 }`}
               >
                 {filter}
@@ -275,21 +307,22 @@ export default function HomePage() {
           )}
         </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-3">
+        <div className="mt-10 grid gap-6 lg:grid-cols-3">
           {featuredMarkets.map((market) => (
             <MarketCard key={market.id} market={market} />
           ))}
         </div>
       </section>
 
-      <section className="bg-bg-surface px-6 py-16 sm:px-8 lg:px-10">
+      <section className="relative overflow-hidden bg-bg-surface/70 px-6 py-20 sm:px-8 lg:px-10">
+        <div className="gradient-divider absolute inset-x-12 top-0" />
         <SectionTitle
           title="BUILT DIFFERENT"
           accentWord="DIFFERENT"
           subtitle="Not another prediction market. Here's what sets Veritas apart."
         />
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+        <div className="mt-12 grid gap-6 lg:grid-cols-3">
           {featureCards.map((feature, index) => {
             const Icon = feature.icon
             const centered = index >= 3
@@ -297,14 +330,14 @@ export default function HomePage() {
             return (
               <article
                 key={feature.number}
-                className={`relative overflow-hidden rounded-xl border border-border bg-bg-card p-7 transition duration-200 ease-out hover:border-text-muted hover:bg-bg-card-hover hover:shadow-[0_0_0_1px_var(--text-muted)] ${
+                className={`card-elevated card-interactive relative overflow-hidden rounded-xl p-7 ${
                   centered ? 'lg:col-span-1' : ''
                 } ${index === 3 ? 'lg:col-start-1 xl:col-start-1' : ''} ${
                   index === 4 ? 'lg:col-start-2 xl:col-start-2' : ''
                 }`}
               >
                 <span className="feature-number">{feature.number}</span>
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-[10px] bg-bg-surface text-accent">
+                <span className="inline-flex h-11 w-11 items-center justify-center rounded-[12px] border border-border bg-bg-surface text-accent shadow-accent-glow">
                   <Icon className="h-5 w-5" />
                 </span>
                 <h3 className="mt-5 text-[20px] font-semibold text-text-primary">
@@ -319,17 +352,23 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-bg-base px-6 py-16 sm:px-8 lg:px-10">
+      <section className="relative bg-bg-base px-6 py-20 sm:px-8 lg:px-10">
+        <div className="gradient-divider absolute inset-x-12 top-0" />
         <SectionTitle title="HOW IT WORKS" accentWord="WORKS" />
 
-        <div className="relative mt-10">
-          <div className="steps-connector absolute left-[16.66%] right-[16.66%] top-6 hidden border-t border-dashed border-border lg:block" />
-          <div className="grid gap-8 lg:grid-cols-3">
+        <div className="relative mt-12">
+          <div className="steps-connector absolute left-[16.66%] right-[16.66%] top-7 hidden border-t border-dashed border-border lg:block" />
+          <div className="grid gap-10 lg:grid-cols-3">
             {workflowSteps.map((step) => (
-              <article key={step.number} className="relative rounded-xl bg-transparent">
-                <p className="font-display text-5xl uppercase tracking-[0.08em] text-accent">
-                  {step.number}
-                </p>
+              <article
+                key={step.number}
+                className="relative rounded-xl bg-transparent"
+              >
+                <div className="relative mb-1 inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-bg-surface text-accent shadow-accent-glow">
+                  <span className="font-display text-xl uppercase tracking-[0.06em]">
+                    {step.number}
+                  </span>
+                </div>
                 <h3 className="mt-5 text-xl font-semibold text-text-primary">
                   {step.title}
                 </h3>
@@ -338,6 +377,33 @@ export default function HomePage() {
                 </p>
               </article>
             ))}
+          </div>
+        </div>
+
+        <div className="mt-16 flex flex-col items-center gap-5 rounded-2xl border border-border bg-bg-card/60 p-10 text-center shadow-card-elevated">
+          <span className="inline-flex items-center gap-2 rounded-full border border-border bg-bg-surface px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-text-secondary">
+            <Sparkles className="h-3.5 w-3.5 text-accent" />
+            Ready to predict?
+          </span>
+          <h3 className="font-display text-[clamp(32px,4vw,48px)] uppercase leading-tight tracking-[0.06em] text-text-primary">
+            Stake on what you believe.
+            <br />
+            <span className="accent-text-gradient">Let truth settle the rest.</span>
+          </h3>
+          <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/markets"
+              className="button-primary inline-flex items-center justify-center gap-2 rounded-lg bg-accent-hot px-7 py-3.5 text-sm font-semibold text-white"
+            >
+              Browse Markets
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href="/markets/create"
+              className="button-secondary inline-flex items-center justify-center rounded-lg border border-border bg-transparent px-7 py-3.5 text-sm font-semibold text-text-primary hover:border-border-strong hover:bg-bg-surface"
+            >
+              Create Market
+            </Link>
           </div>
         </div>
       </section>

@@ -14,7 +14,7 @@ export function StatCallout({
   return (
     <div className={className}>
       <div className="flex items-end gap-2">
-        <span className="font-display text-4xl leading-none tracking-[0.08em] text-accent">
+        <span className="font-display text-4xl leading-none tracking-[0.06em] accent-text-gradient">
           {value}
         </span>
         {unit ? (

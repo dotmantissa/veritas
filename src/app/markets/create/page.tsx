@@ -390,16 +390,26 @@ export default function CreateMarketPage() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-xl border border-border bg-bg-card p-8 fade-up">
-        <SectionTitle
-          title="Create A Market"
-          accentWord="Market"
-          subtitle="Define the question, lock the outcome set, wire the resolution sources, and deploy through the mock Rialo transaction flow."
+      <section className="card-elevated relative overflow-hidden rounded-2xl p-8 fade-up">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-24 -right-16 h-64 w-64 rounded-full bg-accent/8 blur-3xl"
         />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-accent-hot/8 blur-3xl"
+        />
+        <div className="relative">
+          <SectionTitle
+            title="Create A Market"
+            accentWord="Market"
+            subtitle="Define the question, lock the outcome set, wire the resolution sources, and deploy through the mock Rialo transaction flow."
+          />
+        </div>
       </section>
 
       <section className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_22rem]">
-        <div className="rounded-xl border border-border bg-bg-card p-6 xl:max-w-[720px]">
+        <div className="card-elevated rounded-xl p-6 xl:max-w-[760px]">
           <div className="grid gap-3 sm:grid-cols-4">
             {(Object.entries(stepLabels) as Array<[string, string]>).map(
               ([stepNumber, label]) => {
@@ -410,9 +420,9 @@ export default function CreateMarketPage() {
                 return (
                   <div
                     key={label}
-                    className={`rounded-xl border px-4 py-4 ${
+                    className={`rounded-xl border px-4 py-4 transition ${
                       isActive
-                        ? 'border-accent bg-accent-subtle'
+                        ? 'border-accent bg-accent-subtle shadow-accent-glow'
                         : 'border-border bg-bg-surface'
                     }`}
                   >
@@ -816,7 +826,7 @@ export default function CreateMarketPage() {
               <button
                 type="button"
                 onClick={goNext}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-accent-hot px-5 py-3 text-sm font-semibold text-white transition duration-150 ease-out hover:scale-[1.02] hover:brightness-110 active:scale-[0.97]"
+                className="button-primary inline-flex items-center justify-center gap-2 rounded-lg bg-accent-hot px-5 py-3 text-sm font-semibold text-white"
               >
                 Next
                 <ArrowRight className="h-4 w-4" />
@@ -826,7 +836,7 @@ export default function CreateMarketPage() {
                 type="button"
                 onClick={() => void handleSubmit()}
                 disabled={isSubmitting}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent-hot px-5 py-4 font-display text-2xl uppercase tracking-[0.08em] text-white transition duration-150 ease-out hover:scale-[1.02] hover:brightness-110 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                className="button-primary inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent-hot px-5 py-4 font-display text-2xl uppercase tracking-[0.08em] text-white disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
               >
                 {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                 Deploy Market
@@ -840,7 +850,7 @@ export default function CreateMarketPage() {
         </div>
 
         <aside className="space-y-4 xl:sticky xl:top-28 xl:self-start">
-          <div className="rounded-xl border border-border bg-bg-card p-5">
+          <div className="card-elevated rounded-xl p-5">
             <p className="text-xs uppercase tracking-[0.18em] text-text-muted">
               Deployment Summary
             </p>
@@ -858,7 +868,7 @@ export default function CreateMarketPage() {
             </p>
           </div>
 
-          <div className="rounded-xl border border-border bg-bg-card p-5">
+          <div className="card-elevated rounded-xl p-5">
             <p className="text-sm font-semibold text-text-primary">Templates</p>
             <div className="mt-4 space-y-3">
               {(Object.entries(SOURCE_TEMPLATES) as Array<
@@ -868,7 +878,7 @@ export default function CreateMarketPage() {
                   key={key}
                   type="button"
                   onClick={() => applyTemplate(key)}
-                  className="block w-full rounded-xl border border-border bg-bg-surface px-4 py-3 text-left transition hover:border-text-muted"
+                  className="block w-full rounded-xl border border-border bg-bg-surface px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-border-strong"
                 >
                   <span className="block text-sm font-semibold text-text-primary">{key}</span>
                   <span className="mt-1 block text-xs text-text-secondary">

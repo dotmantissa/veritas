@@ -70,7 +70,7 @@ export function PositionCard({ market, position }: PositionCardProps) {
   }
 
   return (
-    <article className="rounded-xl border border-border bg-bg-card p-5">
+    <article className="card-elevated card-interactive rounded-xl p-5">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex gap-4 min-w-0 flex-1">
           <div className={`hidden w-1 rounded-full sm:block ${outcomeColor.split(' ')[0]}`} />
@@ -127,7 +127,7 @@ export function PositionCard({ market, position }: PositionCardProps) {
               </p>
               <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-bg-base">
                 <div
-                  className={outcomeColor.split(' ')[0]}
+                  className={`h-full transition-[width] duration-500 ${outcomeColor.split(' ')[0]}`}
                   style={{ width: impliedProbability }}
                 />
               </div>
@@ -157,10 +157,10 @@ export function PositionCard({ market, position }: PositionCardProps) {
               type="button"
               onClick={() => void handleClaim()}
               disabled={isSubmitting}
-              className={`mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 font-display text-xl uppercase tracking-[0.08em] transition duration-150 ease-out hover:scale-[1.02] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 ${
+              className={`mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 font-display text-xl uppercase tracking-[0.08em] transition duration-150 ease-out disabled:cursor-not-allowed disabled:opacity-60 ${
                 claimablePayout
-                  ? 'bg-accent text-bg-base hover:brightness-110'
-                  : 'border border-border bg-transparent text-text-primary hover:border-text-muted hover:bg-bg-card-hover'
+                  ? 'button-primary bg-accent text-bg-base'
+                  : 'border border-border bg-transparent text-text-primary hover:border-border-strong hover:bg-bg-card-hover'
               }`}
             >
               {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}

@@ -96,8 +96,16 @@ export default function MarketDetailPage() {
 
   return (
     <div className={`space-y-8 ${currentMarket.status === 'Open' ? 'pb-80 lg:pb-0' : ''}`}>
-      <section className="rounded-xl border border-border bg-bg-card p-6 sm:p-8 fade-up">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+      <section className="card-elevated relative overflow-hidden rounded-2xl p-6 sm:p-8 fade-up">
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-24 -right-16 h-64 w-64 rounded-full bg-accent/8 blur-3xl"
+        />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-accent-hot/8 blur-3xl"
+        />
+        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-4xl">
             <Link
               href="/markets"
@@ -150,19 +158,25 @@ export default function MarketDetailPage() {
             ) : null}
           </div>
 
-          <div className="w-full max-w-sm rounded-xl border border-border bg-bg-surface p-5">
+          <div className="w-full max-w-sm rounded-xl border border-border bg-bg-surface p-5 shadow-card-elevated">
             <p className="text-xs uppercase tracking-[0.2em] text-text-muted">
               Total Pool
             </p>
-            <p className="mt-3 font-display text-5xl uppercase tracking-[0.05em] text-accent">
+            <p className="mt-3 font-display text-5xl uppercase tracking-[0.05em] accent-text-gradient">
               {formatRIALO(currentMarket.total_pool)}
             </p>
             <p className="mt-5 text-sm text-text-secondary">
-              Consensus threshold: {currentMarket.consensus_threshold}/
-              {currentMarket.resolution_sources.length}
+              Consensus threshold:{' '}
+              <span className="font-mono text-text-primary">
+                {currentMarket.consensus_threshold}/
+                {currentMarket.resolution_sources.length}
+              </span>
             </p>
             <p className="mt-2 text-sm text-text-secondary">
-              Protocol fee: 0.000005 RIALO gas, 2% settlement fee
+              Protocol fee:{' '}
+              <span className="font-mono text-text-primary">
+                0.000005 RIALO gas, 2% settlement
+              </span>
             </p>
 
             {canTriggerResolution ? (
@@ -170,7 +184,7 @@ export default function MarketDetailPage() {
                 type="button"
                 onClick={() => void handleTriggerResolution()}
                 disabled={isResolving}
-                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-accent bg-accent-subtle px-4 py-3 text-sm font-semibold text-accent transition hover:border-text-primary hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-60"
+                className="button-secondary mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-accent bg-accent-subtle px-4 py-3 text-sm font-semibold text-accent transition hover:border-text-primary hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isResolving ? <Loader2 className="h-4 w-4 animate-spin" /> : <TimerReset className="h-4 w-4" />}
                 Trigger Resolution
@@ -192,14 +206,14 @@ export default function MarketDetailPage() {
 
       <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="space-y-8">
-          <section className="rounded-xl border border-border bg-bg-card p-6 fade-up fade-up-delay-1">
+          <section className="card-elevated rounded-xl p-6 fade-up fade-up-delay-1">
             <div className="flex items-center gap-3">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-bg-surface text-accent">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-bg-surface text-accent shadow-accent-glow">
                 <BadgeInfo className="h-5 w-5" />
               </span>
               <div>
                 <h2 className="font-display text-3xl uppercase tracking-[0.08em] text-text-primary">
-                  Pool <span className="text-accent">Breakdown</span>
+                  Pool <span className="accent-text-gradient">Breakdown</span>
                 </h2>
                 <p className="text-sm text-text-secondary">
                   Implied probabilities update directly from the seeded liquidity pools.

@@ -37,15 +37,15 @@ export function ResolutionConsole({
   }
 
   return (
-    <section className="rounded-xl border border-border bg-bg-card p-6">
+    <section className="card-elevated rounded-xl p-6">
       <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
         <div className="flex items-center gap-3">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-bg-surface text-accent">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-bg-surface text-accent shadow-accent-glow">
             <TerminalSquare className="h-5 w-5" />
           </span>
           <div>
             <h2 className="font-display text-2xl uppercase tracking-[0.08em] text-text-primary">
-              Resolution Console
+              Resolution <span className="accent-text-gradient">Console</span>
             </h2>
             <p className="text-sm text-text-secondary">
               Live log replay of the Rialo async source consensus flow.
@@ -61,7 +61,7 @@ export function ResolutionConsole({
 
       <div
         ref={containerRef}
-        className="mt-5 max-h-[26rem] overflow-y-auto rounded-xl border border-border bg-bg-base p-4 font-mono text-sm leading-7 text-status-open"
+        className="mt-5 max-h-[26rem] overflow-y-auto rounded-xl border border-border bg-[#050505] p-4 font-mono text-sm leading-7 text-status-open shadow-[inset_0_2px_8px_rgba(0,0,0,0.45)]"
       >
         {logLines.length > 0 ? (
           logLines.map((line, index) => (

@@ -72,12 +72,12 @@ export function ResolutionSources({
   ]
 
   return (
-    <section className="rounded-xl border border-border bg-bg-card p-6">
+    <section className="card-elevated rounded-xl p-6">
       <div className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
             <h2 className="font-display text-3xl uppercase tracking-[0.08em] text-text-primary">
-              How This Market <span className="text-accent">Resolves</span>
+              How This Market <span className="accent-text-gradient">Resolves</span>
             </h2>
             <span
               className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border bg-bg-surface text-text-secondary"
@@ -92,9 +92,12 @@ export function ResolutionSources({
             with the most agreement wins.
           </p>
         </div>
-        <div className="rounded-xl border border-border bg-bg-surface px-4 py-3 text-sm text-text-primary">
-          Requires {market.consensus_threshold} of{' '}
-          {market.resolution_sources.length} sources to agree
+        <div className="rounded-xl border border-accent/30 bg-accent-subtle px-4 py-3 text-sm text-text-primary shadow-accent-glow">
+          <span className="text-text-secondary">Requires</span>{' '}
+          <span className="font-mono text-accent">
+            {market.consensus_threshold} of {market.resolution_sources.length}
+          </span>{' '}
+          <span className="text-text-secondary">sources to agree</span>
         </div>
       </div>
 
@@ -109,7 +112,7 @@ export function ResolutionSources({
           return (
             <article
               key={`${market.id}:${source.label}`}
-              className="rounded-xl border border-border bg-bg-surface p-5"
+              className="rounded-xl border border-border bg-bg-surface p-5 transition hover:border-border-strong"
             >
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div className="min-w-0 flex-1">

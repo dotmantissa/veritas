@@ -39,39 +39,49 @@ export function MarketGrid({ markets }: { markets: Market[] }) {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-4 rounded-xl border border-border bg-bg-card p-5">
-        <div className="flex flex-wrap gap-2">
-          {categoryFilters.map((filter) => (
-            <button
-              key={filter}
-              type="button"
-              onClick={() => setCategory(filter)}
-              className={`rounded-full border px-4 py-2 text-sm transition ${
-                category === filter
-                  ? 'border-accent-hot bg-accent-hot text-white'
-                  : 'border-border bg-bg-card text-text-secondary hover:border-text-muted hover:text-text-primary'
-              }`}
-            >
-              {filter}
-            </button>
-          ))}
+      <div className="space-y-4 rounded-xl border border-border bg-bg-card/80 p-5 shadow-card-elevated backdrop-blur">
+        <div>
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-text-muted">
+            Category
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {categoryFilters.map((filter) => (
+              <button
+                key={filter}
+                type="button"
+                onClick={() => setCategory(filter)}
+                className={`rounded-full border px-4 py-2 text-sm transition-all duration-150 ${
+                  category === filter
+                    ? 'border-accent-hot bg-accent-hot text-white shadow-hot-glow'
+                    : 'border-border bg-bg-surface text-text-secondary hover:-translate-y-0.5 hover:border-border-strong hover:text-text-primary'
+                }`}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {statusFilters.map((filter) => (
-            <button
-              key={filter}
-              type="button"
-              onClick={() => setStatus(filter)}
-              className={`rounded-full border px-4 py-2 text-sm transition ${
-                status === filter
-                  ? 'border-accent-hot bg-accent-hot text-white'
-                  : 'border-border bg-bg-card text-text-secondary hover:border-text-muted hover:text-text-primary'
-              }`}
-            >
-              {filter}
-            </button>
-          ))}
+        <div>
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-text-muted">
+            Status
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {statusFilters.map((filter) => (
+              <button
+                key={filter}
+                type="button"
+                onClick={() => setStatus(filter)}
+                className={`rounded-full border px-4 py-2 text-sm transition-all duration-150 ${
+                  status === filter
+                    ? 'border-accent bg-accent-subtle text-accent shadow-accent-glow'
+                    : 'border-border bg-bg-surface text-text-secondary hover:-translate-y-0.5 hover:border-border-strong hover:text-text-primary'
+                }`}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -82,8 +92,8 @@ export function MarketGrid({ markets }: { markets: Market[] }) {
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-border bg-bg-card px-6 py-14 text-center">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-bg-surface text-accent">
+        <div className="rounded-xl border border-dashed border-border bg-bg-card/60 px-6 py-14 text-center">
+          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-bg-surface text-accent shadow-accent-glow">
             <Telescope className="h-5 w-5" />
           </span>
           <p className="mt-5 text-lg font-semibold text-text-primary">
@@ -94,7 +104,7 @@ export function MarketGrid({ markets }: { markets: Market[] }) {
           </p>
           <Link
             href="/markets/create"
-            className="mt-6 inline-flex items-center justify-center rounded-lg bg-accent-hot px-6 py-3 text-sm font-semibold text-white transition duration-150 ease-out hover:scale-[1.02] hover:brightness-110 active:scale-[0.97]"
+            className="button-primary mt-6 inline-flex items-center justify-center rounded-lg bg-accent-hot px-6 py-3 text-sm font-semibold text-white"
           >
             Create the first one →
           </Link>

@@ -94,8 +94,9 @@ export function TxToast() {
       theme="dark"
       toastOptions={{
         classNames: {
-          toast: 'border border-white/10 bg-slate-900 text-slate-100',
-          description: 'text-slate-300',
+          toast:
+            'border border-border bg-bg-card text-text-primary shadow-card-elevated backdrop-blur',
+          description: 'text-text-secondary',
         },
       }}
     />
