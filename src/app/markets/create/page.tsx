@@ -517,7 +517,7 @@ export default function CreateMarketPage() {
               <div className="space-y-5">
                 {outcomes.map((outcome, index) => (
                   <div
-                    key={`${index}-${outcome}`}
+                    key={`outcome-${index}`}
                     className="flex gap-3 rounded-xl border border-border bg-bg-surface p-4"
                   >
                     <input
@@ -597,7 +597,7 @@ export default function CreateMarketPage() {
 
                   return (
                     <article
-                      key={`${sourceIndex}-${source.label}`}
+                      key={`source-${sourceIndex}`}
                       className="rounded-xl border border-border bg-bg-surface p-5"
                     >
                       <div className="flex items-center justify-between gap-4">
@@ -668,7 +668,7 @@ export default function CreateMarketPage() {
                         <div className="mt-4 grid gap-3">
                           {outcomes.map((outcome, mappingIndex) => (
                             <label
-                              key={`${sourceIndex}-${mappingIndex}-${outcome}`}
+                              key={`source-${sourceIndex}-mapping-${mappingIndex}`}
                               className="grid gap-2 md:grid-cols-[160px_minmax(0,1fr)] md:items-center"
                             >
                               <span className="text-sm text-text-secondary">{outcome}</span>

@@ -30,9 +30,6 @@ export function Footer() {
             <Link href="/portfolio" className="transition hover:text-text-primary">
               Portfolio
             </Link>
-            <Link href="/markets" className="transition hover:text-text-primary">
-              Docs
-            </Link>
           </nav>
         </div>
 

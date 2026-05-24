@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { isToday } from 'date-fns'
 import {
   ArrowRight,
@@ -15,6 +15,7 @@ import {
 import { MarketCard } from '@/components/markets/MarketCard'
 import { SectionTitle } from '@/components/ui/SectionTitle'
 import { StatCallout } from '@/components/ui/StatCallout'
+import type { MarketCategory } from '@/lib/types'
 import { useMarketStore } from '@/store/marketStore'
 
 const featureCards = [
@@ -76,8 +77,18 @@ const workflowSteps = [
   },
 ] as const
 
+const featureCategories: Array<'All' | MarketCategory> = [
+  'All',
+  'Sports',
+  'Finance',
+  'Crypto',
+  'Weather',
+  'Politics',
+]
+
 export default function HomePage() {
   const markets = useMarketStore((state) => state.markets)
+  const [featuredFilter, setFeaturedFilter] = useState<'All' | MarketCategory>('All')
 
   const totalVolume = useMemo(
     () => markets.reduce((sum, market) => sum + market.total_pool, 0),
@@ -100,13 +111,17 @@ export default function HomePage() {
     () =>
       [...markets]
         .filter((market) => market.status === 'Open')
+        .filter(
+          (market) =>
+            featuredFilter === 'All' || market.category === featuredFilter
+        )
         .sort((left, right) => {
           const leftActivity = Math.max(left.created_at, left.deadline)
           const rightActivity = Math.max(right.created_at, right.deadline)
           return rightActivity - leftActivity
         })
         .slice(0, 3),
-    [markets]
+    [markets, featuredFilter]
   )
 
   return (
@@ -290,13 +305,15 @@ export default function HomePage() {
         </div>
 
         <div className="mt-8 flex flex-wrap gap-2">
-          {['All', 'Sports', 'Finance', 'Crypto', 'Weather', 'Politics'].map(
-            (filter, index) => (
+          {featureCategories.map((filter) => {
+            const active = featuredFilter === filter
+            return (
               <button
                 key={filter}
                 type="button"
+                onClick={() => setFeaturedFilter(filter)}
                 className={`rounded-full border px-4 py-2 text-sm transition-all duration-150 ${
-                  index === 0
+                  active
                     ? 'border-accent-hot bg-accent-hot text-white shadow-hot-glow'
                     : 'border-border bg-bg-card text-text-secondary hover:-translate-y-0.5 hover:border-border-strong hover:text-text-primary'
                 }`}
@@ -304,14 +321,25 @@ export default function HomePage() {
                 {filter}
               </button>
             )
-          )}
+          })}
         </div>
 
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
-          {featuredMarkets.map((market) => (
-            <MarketCard key={market.id} market={market} />
-          ))}
-        </div>
+        {featuredMarkets.length > 0 ? (
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            {featuredMarkets.map((market) => (
+              <MarketCard key={market.id} market={market} />
+            ))}
+          </div>
+        ) : (
+          <div className="mt-10 rounded-xl border border-dashed border-border bg-bg-card/60 px-6 py-14 text-center">
+            <p className="text-lg font-semibold text-text-primary">
+              No open {featuredFilter === 'All' ? '' : `${featuredFilter} `}markets yet.
+            </p>
+            <p className="mt-2 text-sm text-text-secondary">
+              Try another category, or create the first one.
+            </p>
+          </div>
+        )}
       </section>
 
       <section className="relative overflow-hidden bg-bg-surface/70 px-6 py-20 sm:px-8 lg:px-10">
