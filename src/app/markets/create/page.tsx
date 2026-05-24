@@ -51,7 +51,7 @@ const stepLabels: Record<Step, string> = {
 }
 
 const defaultSource = (outcomeCount: number): SourceConfig => ({
-  label: 'New Source',
+  label: '',
   url: '',
   json_path: '$.',
   outcome_mappings: Array.from({ length: outcomeCount }, () => ''),
@@ -85,24 +85,9 @@ export default function CreateMarketPage() {
   )
   const [outcomes, setOutcomes] = useState<string[]>(['Yes', 'No'])
   const [sources, setSources] = useState<SourceConfig[]>([
-    {
-      label: 'OpenMeteo Daily Rain',
-      url: 'https://api.open-meteo.com/v1/forecast?latitude=6.52&longitude=3.37&daily=rain_sum&timezone=Africa%2FLagos',
-      json_path: '$.daily.rain_sum.0',
-      outcome_mappings: ['1', '0'],
-    },
-    {
-      label: 'OpenMeteo Hourly Precipitation',
-      url: 'https://api.open-meteo.com/v1/forecast?latitude=6.52&longitude=3.37&hourly=precipitation_probability&timezone=Africa%2FLagos',
-      json_path: '$.hourly.precipitation_probability.0',
-      outcome_mappings: ['80', '10'],
-    },
-    {
-      label: 'Weather Mirror',
-      url: 'https://mock.veritas/weather/lagos-rain',
-      json_path: '$.forecast',
-      outcome_mappings: ['rain', 'clear'],
-    },
+    defaultSource(2),
+    defaultSource(2),
+    defaultSource(2),
   ])
   const [consensusThreshold, setConsensusThreshold] = useState(
     CONSENSUS_THRESHOLD_DEFAULT
@@ -146,15 +131,11 @@ export default function CreateMarketPage() {
       return
     }
 
-    const nextOutcomes = outcomes.filter((_, currentIndex) => currentIndex !== index)
-    setOutcomes(nextOutcomes)
-    syncSourcesToOutcomeCount(nextOutcomes.length)
+    setOutcomes((current) => current.filter((_, i) => i !== index))
     setSources((current) =>
       current.map((source) => ({
         ...source,
-        outcome_mappings: source.outcome_mappings.filter(
-          (_, currentIndex) => currentIndex !== index
-        ),
+        outcome_mappings: source.outcome_mappings.filter((_, i) => i !== index),
       }))
     )
   }
@@ -220,8 +201,36 @@ export default function CreateMarketPage() {
     })
   }
 
+  function hasUserEnteredContent(): boolean {
+    if (question.trim().length > 0) {
+      return true
+    }
+    if (
+      outcomes.some(
+        (outcome, index) => outcome.trim() !== (index === 0 ? 'Yes' : index === 1 ? 'No' : '')
+      )
+    ) {
+      return true
+    }
+    return sources.some(
+      (source) =>
+        source.label.trim().length > 0 ||
+        source.url.trim().length > 0 ||
+        source.outcome_mappings.some((mapping) => mapping.trim().length > 0)
+    )
+  }
+
   function applyTemplate(templateKey: keyof typeof SOURCE_TEMPLATES): void {
     const template = SOURCE_TEMPLATES[templateKey]
+
+    if (hasUserEnteredContent() && typeof window !== 'undefined') {
+      const confirmed = window.confirm(
+        `Applying the "${templateKey}" template will replace your current question, outcomes, and sources. Continue?`
+      )
+      if (!confirmed) {
+        return
+      }
+    }
 
     setQuestion(template.question)
     setCategory(template.category as MarketCategory)
@@ -782,7 +791,7 @@ export default function CreateMarketPage() {
                   <div className="mt-4 space-y-4">
                     {sources.map((source, index) => (
                       <div
-                        key={`${source.label}-${index}`}
+                        key={`review-source-${index}`}
                         className="rounded-xl border border-border bg-bg-card p-4"
                       >
                         <div className="flex items-center justify-between gap-4">
