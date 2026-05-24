@@ -195,6 +195,17 @@ textarea::placeholder {
   color: var(--text-muted);
 }
 
+select option {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+select option:checked,
+select option:hover {
+  background-color: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+
 .hero-noise {
   position: relative;
   background:
