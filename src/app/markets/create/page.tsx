@@ -201,43 +201,28 @@ export default function CreateMarketPage() {
     })
   }
 
-  function hasUserEnteredContent(): boolean {
-    if (question.trim().length > 0) {
-      return true
-    }
-    if (
-      outcomes.some(
-        (outcome, index) => outcome.trim() !== (index === 0 ? 'Yes' : index === 1 ? 'No' : '')
-      )
-    ) {
-      return true
-    }
-    return sources.some(
+  function applySourceTemplate(templateKey: keyof typeof SOURCE_TEMPLATES): void {
+    const template = SOURCE_TEMPLATES[templateKey]
+
+    const hasExistingSources = sources.some(
       (source) =>
         source.label.trim().length > 0 ||
         source.url.trim().length > 0 ||
         source.outcome_mappings.some((mapping) => mapping.trim().length > 0)
     )
-  }
 
-  function applyTemplate(templateKey: keyof typeof SOURCE_TEMPLATES): void {
-    const template = SOURCE_TEMPLATES[templateKey]
-
-    if (hasUserEnteredContent() && typeof window !== 'undefined') {
+    if (hasExistingSources && typeof window !== 'undefined') {
       const confirmed = window.confirm(
-        `Applying the "${templateKey}" template will replace your current question, outcomes, and sources. Continue?`
+        `Replace the current resolution sources with the "${templateKey}" example sources? Your question, category, and outcomes will be kept.`
       )
       if (!confirmed) {
         return
       }
     }
 
-    setQuestion(template.question)
-    setCategory(template.category as MarketCategory)
-    setOutcomes(template.outcomes)
     setSources(
       template.sources.map((source) =>
-        ensureSourceMappings(source, template.outcomes.length)
+        ensureSourceMappings(source, outcomes.length)
       )
     )
     setConsensusThreshold(Math.min(template.sources.length, CONSENSUS_THRESHOLD_DEFAULT))
@@ -563,10 +548,10 @@ export default function CreateMarketPage() {
                 <div className="flex flex-col gap-4 rounded-xl border border-border bg-bg-surface p-5 lg:flex-row lg:items-center lg:justify-between">
                   <div>
                     <h2 className="text-lg font-semibold text-text-primary">
-                      Source Templates
+                      Quick-fill Sources
                     </h2>
                     <p className="mt-1 text-sm text-text-secondary">
-                      Prefill common Weather, Crypto, or Sports source sets.
+                      Load example Weather, Crypto, or Sports source URLs. Your question and outcomes are kept.
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -576,7 +561,7 @@ export default function CreateMarketPage() {
                       <button
                         key={templateKey}
                         type="button"
-                        onClick={() => applyTemplate(templateKey)}
+                        onClick={() => applySourceTemplate(templateKey)}
                         className="rounded-full border border-border bg-bg-card px-4 py-2 text-sm text-text-secondary transition hover:border-text-muted hover:text-text-primary"
                       >
                         {templateKey}
@@ -875,27 +860,6 @@ export default function CreateMarketPage() {
             <p className="mt-2 text-sm text-text-secondary">
               Outcomes: <span className="text-text-primary">{outcomes.length}</span>
             </p>
-          </div>
-
-          <div className="card-elevated rounded-xl p-5">
-            <p className="text-sm font-semibold text-text-primary">Templates</p>
-            <div className="mt-4 space-y-3">
-              {(Object.entries(SOURCE_TEMPLATES) as Array<
-                [keyof typeof SOURCE_TEMPLATES, (typeof SOURCE_TEMPLATES)[keyof typeof SOURCE_TEMPLATES]]
-              >).map(([key, template]) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => applyTemplate(key)}
-                  className="block w-full rounded-xl border border-border bg-bg-surface px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-border-strong"
-                >
-                  <span className="block text-sm font-semibold text-text-primary">{key}</span>
-                  <span className="mt-1 block text-xs text-text-secondary">
-                    {template.description}
-                  </span>
-                </button>
-              ))}
-            </div>
           </div>
         </aside>
       </section>
